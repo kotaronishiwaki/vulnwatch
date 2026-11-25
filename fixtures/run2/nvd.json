@@ -1,0 +1,232 @@
+{
+ "resultsPerPage": 4,
+ "totalResults": 4,
+ "vulnerabilities": [
+  {
+   "cve": {
+    "id": "CVE-2099-0002",
+    "published": "2099-01-10T03:00:00.000",
+    "lastModified": "2099-01-10T09:00:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "Demo Gateway VPN 5.x before 5.2.7 contains an authentication bypass in the web management interface."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 9.8,
+        "baseSeverity": "CRITICAL",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-287"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:demo_networks:demo_gateway_vpn:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/demo-gateway/sa-0002"
+     },
+     {
+      "url": "https://example.com/demo-gateway/sa-0002-update"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0004",
+    "published": "2099-01-10T05:00:00.000",
+    "lastModified": "2099-01-10T09:10:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "Placeholder Router firmware 2.0.1 allows authenticated users to inject OS commands through the diagnostics page."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 8.8,
+        "baseSeverity": "HIGH",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-78"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:placeholder_tech:placeholder_router:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/router/notice"
+     },
+     {
+      "url": "https://example.com/router/firmware-2.0.2"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0005",
+    "published": "2099-01-10T05:30:00.000",
+    "lastModified": "2099-01-10T09:20:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "SampleCMS Forms plugin before 2.3.0 is vulnerable to SQL injection via the id parameter."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 8.6,
+        "baseSeverity": "HIGH",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-89"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:sample_inc:samplecms_forms:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/samplecms/forms-2.3.0"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0006",
+    "published": "2099-01-10T09:30:00.000",
+    "lastModified": "2099-01-10T09:30:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "Example Backup Agent 11.0 exposes a debug service on TCP port 9000 that allows remote code execution without authentication."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 10.0,
+        "baseSeverity": "CRITICAL",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-306"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:example_soft:example_backup_agent:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/backup/sa-11"
+     }
+    ]
+   }
+  }
+ ]
+}

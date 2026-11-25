@@ -1,0 +1,58 @@
+{
+  "site_name": "脆弱性ウォッチ",
+  "headline": "いま対応が要る脆弱性を、1時間ごとに。",
+  "tagline": "公的データベースの情報だけをAIが日本語で要約。続報は同じページに追記します。",
+  "site_url": "https://example.pages.dev",
+  "demo": true,
+  "filters": {
+    "min_cvss": 7.0,
+    "lookback_hours": 6,
+    "max_extra_lookups": 20,
+    "include_jvn_only": true
+  },
+  "ai": {
+    "model": "claude-haiku-5-5",
+    "max_per_run": 40
+  },
+  "ads": {
+    "adsense_client": "",
+    "slot_list": "",
+    "slot_article": ""
+  },
+  "affiliate": [
+    {
+      "match": [
+        "samplecms"
+      ],
+      "title": "（例）CMS向けWAFサービス",
+      "text": "修正版を当てるまでの間、攻撃を入口で止める",
+      "url": "https://example.com/waf"
+    },
+    {
+      "default": true,
+      "title": "（例）脆弱性診断サービス",
+      "text": "自社の機器に同じ問題がないかを確認する",
+      "url": "https://example.com/scan"
+    }
+  ],
+  "payments": {
+    "alert_price": "月額500円（税込）",
+    "alert_link": "https://example.com/pay/alert",
+    "sponsor_price": "月額10,000円（税込）",
+    "sponsor_link": "https://example.com/pay/sponsor",
+    "donate_link": "https://example.com/pay/donate"
+  },
+  "sponsor": {
+    "enabled": false,
+    "name": "",
+    "url": "",
+    "text": ""
+  },
+  "social": {
+    "hashtags": [
+      "脆弱性",
+      "セキュリティ"
+    ],
+    "max_posts_per_run": 4
+  }
+}

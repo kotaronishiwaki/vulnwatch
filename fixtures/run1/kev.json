@@ -1,0 +1,14 @@
+{
+ "vulnerabilities": [
+  {
+   "cveID": "CVE-2099-0001",
+   "vendorProject": "Sample Inc",
+   "product": "SampleCMS",
+   "vulnerabilityName": "SampleCMS Vulnerability",
+   "dateAdded": "2099-01-10",
+   "dueDate": "2099-01-31",
+   "knownRansomwareCampaignUse": "Unknown",
+   "requiredAction": "Apply mitigations per vendor instructions."
+  }
+ ]
+}

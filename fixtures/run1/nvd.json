@@ -1,0 +1,321 @@
+{
+ "resultsPerPage": 6,
+ "totalResults": 6,
+ "vulnerabilities": [
+  {
+   "cve": {
+    "id": "CVE-2099-0001",
+    "published": "2099-01-10T02:00:00.000",
+    "lastModified": "2099-01-10T02:00:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "SampleCMS before 8.4.2 allows unauthenticated remote attackers to execute arbitrary code via a crafted upload request to the media endpoint."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 9.8,
+        "baseSeverity": "CRITICAL",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-434"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:sample_inc:samplecms:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/samplecms/advisory-8.4.2"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0002",
+    "published": "2099-01-10T03:00:00.000",
+    "lastModified": "2099-01-10T03:00:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "Demo Gateway VPN 5.x before 5.2.7 contains an authentication bypass in the web management interface."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 7.5,
+        "baseSeverity": "HIGH",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-287"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:demo_networks:demo_gateway_vpn:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/demo-gateway/sa-0002"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0003",
+    "published": "2099-01-10T04:00:00.000",
+    "lastModified": "2099-01-10T04:00:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "Example Mail Server 3.1 through 3.1.9 has a heap-based buffer overflow in the IMAP parser that may lead to denial of service."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 7.5,
+        "baseSeverity": "HIGH",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-122"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:example_soft:example_mail_server:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/mail/changelog"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0004",
+    "published": "2099-01-10T05:00:00.000",
+    "lastModified": "2099-01-10T05:00:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "Placeholder Router firmware 2.0.1 allows authenticated users to inject OS commands through the diagnostics page."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 8.8,
+        "baseSeverity": "HIGH",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-78"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:placeholder_tech:placeholder_router:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/router/notice"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0005",
+    "published": "2099-01-10T05:30:00.000",
+    "lastModified": "2099-01-10T05:30:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "SampleCMS Forms plugin before 2.3.0 is vulnerable to SQL injection via the id parameter."
+     }
+    ],
+    "metrics": {},
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-89"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:sample_inc:samplecms_forms:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": [
+     {
+      "url": "https://example.com/samplecms/forms-2.3.0"
+     }
+    ]
+   }
+  },
+  {
+   "cve": {
+    "id": "CVE-2099-0099",
+    "published": "2099-01-10T05:30:00.000",
+    "lastModified": "2099-01-10T05:30:00.000",
+    "vulnStatus": "Analyzed",
+    "descriptions": [
+     {
+      "lang": "en",
+      "value": "Low severity sample that should be filtered out."
+     }
+    ],
+    "metrics": {
+     "cvssMetricV31": [
+      {
+       "type": "Primary",
+       "cvssData": {
+        "baseScore": 3.1,
+        "baseSeverity": "LOW",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+       }
+      }
+     ]
+    },
+    "weaknesses": [
+     {
+      "description": [
+       {
+        "lang": "en",
+        "value": "CWE-78"
+       }
+      ]
+     }
+    ],
+    "configurations": [
+     {
+      "nodes": [
+       {
+        "cpeMatch": [
+         {
+          "vulnerable": true,
+          "criteria": "cpe:2.3:a:x:y:*:*:*:*:*:*:*:*"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "references": []
+   }
+  }
+ ]
+}

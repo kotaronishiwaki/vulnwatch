@@ -1,0 +1,24 @@
+{
+ "data": [
+  {
+   "cve": "CVE-2099-0001",
+   "epss": "0.62",
+   "percentile": "0.98"
+  },
+  {
+   "cve": "CVE-2099-0002",
+   "epss": "0.41",
+   "percentile": "0.97"
+  },
+  {
+   "cve": "CVE-2099-0005",
+   "epss": "0.02",
+   "percentile": "0.7"
+  },
+  {
+   "cve": "CVE-2099-0006",
+   "epss": "0.05",
+   "percentile": "0.88"
+  }
+ ]
+}

@@ -1,0 +1,58 @@
+{
+  "site_name": "脆弱性ウォッチ",
+  "headline": "いま対応が要る脆弱性を、1時間ごとに。",
+  "tagline": "公的データベースの情報だけをAIが日本語で要約。続報は同じページに追記します。",
+  "site_url": "https://example.pages.dev",
+  "demo": false,
+  "filters": {
+    "min_cvss": 7.0,
+    "lookback_hours": 6,
+    "max_extra_lookups": 20,
+    "include_jvn_only": true
+  },
+  "ai": {
+    "model": "claude-haiku-5-5",
+    "max_per_run": 40
+  },
+  "ads": {
+    "adsense_client": "",
+    "slot_list": "",
+    "slot_article": ""
+  },
+  "affiliate": [
+    {
+      "match": [
+        "wordpress"
+      ],
+      "title": "",
+      "text": "",
+      "url": ""
+    },
+    {
+      "default": true,
+      "title": "",
+      "text": "",
+      "url": ""
+    }
+  ],
+  "payments": {
+    "alert_price": "月額500円（税込）",
+    "alert_link": "",
+    "sponsor_price": "月額10,000円（税込）",
+    "sponsor_link": "",
+    "donate_link": ""
+  },
+  "sponsor": {
+    "enabled": false,
+    "name": "",
+    "url": "",
+    "text": ""
+  },
+  "social": {
+    "hashtags": [
+      "脆弱性",
+      "セキュリティ"
+    ],
+    "max_posts_per_run": 4
+  }
+}
