@@ -1,32 +1,20 @@
 {
- "at": "2026-11-25T20:14:19Z",
+ "at": "2026-11-25T21:14:36Z",
  "events": [
   {
-   "cve": "CVE-2023-25914",
-   "kind": "new",
-   "changes": [],
-   "major": true
-  },
-  {
-   "cve": "CVE-2023-25915",
-   "kind": "new",
-   "changes": [],
-   "major": true
-  },
-  {
-   "cve": "CVE-2023-39417",
+   "cve": "CVE-2024-58345",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2024-57984",
+   "cve": "CVE-2024-58346",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2025-10622",
+   "cve": "CVE-2024-58347",
    "kind": "new",
    "changes": [],
    "major": false
@@ -35,318 +23,340 @@
    "cve": "CVE-2025-41450",
    "kind": "update",
    "changes": [
-    "CISAが実際の攻撃での悪用を確認しました（2026-11-25 にKEVへ追加）。米政府機関の対応期限は 2026-12-09 です。"
+    "CVSSスコアが 8.2 から 7.5（重要）に変更されました。"
    ],
-   "major": true
+   "major": false
   },
   {
-   "cve": "CVE-2026-101700",
+   "cve": "CVE-2026-103779",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-101701",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-101703",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-104033",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-104034",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-104035",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-104036",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-104037",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105492",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105505",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105522",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105526",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105528",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105537",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105542",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105543",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-105545",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-107904",
+   "cve": "CVE-2026-103780",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-132670",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-132694",
+   "cve": "CVE-2026-103792",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-132697",
+   "cve": "CVE-2026-103799",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-132726",
+   "cve": "CVE-2026-104038",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-104041",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-104042",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-104043",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-105546",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-105547",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-105549",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-105554",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-105557",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-107654",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112788",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-132734",
+   "cve": "CVE-2026-118049",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-132735",
+   "cve": "CVE-2026-120676",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-132736",
+   "cve": "CVE-2026-120941",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-133275",
+   "cve": "CVE-2026-120943",
    "kind": "new",
    "changes": [],
-   "major": true
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-120949",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-121375",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-124216",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-126536",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-131916",
+   "kind": "new",
+   "changes": [],
+   "major": false
   },
   {
    "cve": "CVE-2026-133303",
    "kind": "update",
    "changes": [
-    "CISAが実際の攻撃での悪用を確認しました（2026-11-25 にKEVへ追加）。米政府機関の対応期限は 2026-11-28 です。"
+    "CVSSスコアが 9.0 から 9.8（緊急）に変更されました。"
    ],
-   "major": true
-  },
-  {
-   "cve": "CVE-2026-133311",
-   "kind": "new",
-   "changes": [],
    "major": true
   },
   {
    "cve": "CVE-2026-133323",
    "kind": "update",
    "changes": [
-    "CISAが実際の攻撃での悪用を確認しました（2026-11-25 にKEVへ追加）。米政府機関の対応期限は 2026-11-28 です。"
+    "CVSSスコアが 10.0 から 9.8（緊急）に変更されました。"
    ],
-   "major": true
+   "major": false
   },
   {
-   "cve": "CVE-2026-133324",
-   "kind": "new",
-   "changes": [],
-   "major": true
-  },
-  {
-   "cve": "CVE-2026-133438",
+   "cve": "CVE-2026-133466",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-133464",
+   "cve": "CVE-2026-133467",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-133469",
-   "kind": "update",
-   "changes": [
-    "CISAが実際の攻撃での悪用を確認しました（2026-11-25 にKEVへ追加）。米政府機関の対応期限は 2026-11-28 です。"
-   ],
-   "major": true
-  },
-  {
-   "cve": "CVE-2026-134066",
+   "cve": "CVE-2026-133781",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-135486",
+   "cve": "CVE-2026-134070",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-135706",
+   "cve": "CVE-2026-134894",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-136439",
+   "cve": "CVE-2026-135801",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-136613",
+   "cve": "CVE-2026-135802",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-76235",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-77230",
+   "cve": "CVE-2026-135803",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-78102",
+   "cve": "CVE-2026-137056",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-80724",
+   "cve": "CVE-2026-137057",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-80926",
+   "cve": "CVE-2026-137058",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137059",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137060",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137061",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137077",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137085",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137086",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-95881",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-95882",
+   "cve": "CVE-2026-137090",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-95885",
+   "cve": "CVE-2026-137091",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-95888",
+   "cve": "CVE-2026-137092",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-95896",
+   "cve": "CVE-2026-137093",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-95898",
+   "cve": "CVE-2026-83844",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-96027",
+   "cve": "CVE-2026-88132",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-99277",
+   "cve": "CVE-2026-95894",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-95895",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-96296",
+   "kind": "new",
+   "changes": [],
+   "major": true
+  },
+  {
+   "cve": "CVE-2026-96298",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-96353",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-96991",
    "kind": "new",
    "changes": [],
    "major": false
