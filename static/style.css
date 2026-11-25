@@ -152,6 +152,7 @@ details p { margin-top: 8px; color: var(--muted); }
 .plist li { display: flex; gap: 10px; align-items: baseline; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; }
 .plist span { font-size: .8rem; color: var(--muted); flex: 1; }
 .plist b { font-family: var(--font-mono); }
+.pico { width: 20px; height: 20px; flex: none; align-self: center; color: var(--muted); fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 
 .foot { border-top: 1px solid var(--line); padding: 24px 0 40px; font-size: .88rem; color: var(--muted); }
 .foot .wrap { display: flex; flex-direction: column; gap: 8px; }

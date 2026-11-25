@@ -26,6 +26,51 @@ def slug(p):
     return s or "other"
 
 
+# 製品別の一覧に出す、種類ごとのアイコン（24x24の線画）。各社のロゴは使わない。
+ICONS = {
+    "ai": ("AI", '<rect x="6" y="6" width="12" height="12" rx="2"/><rect x="10" y="10" width="4" height="4"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/>'),
+    "auth": ("認証", '<circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M17 6l3 3M14 9l2 2"/>'),
+    "mail": ("メール", '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>'),
+    "browser": ("ブラウザ", '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M6.5 6.5h.01M9.5 6.5h.01"/>'),
+    "security": ("セキュリティ製品", '<path d="m12 3 8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="m9 12 2 2 4-4"/>'),
+    "nas": ("ストレージ", '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M12 17h.01"/>'),
+    "network": ("ネットワーク機器", '<rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 16.5h.01M11 16.5h.01M12 13V9M8.5 6.5a5 5 0 0 1 7 0"/>'),
+    "cloud": ("クラウド・仮想化", '<path d="M7 18a4 4 0 0 1-.5-8A6 6 0 0 1 18 9.5a4.3 4.3 0 0 1-.5 8.5z"/>'),
+    "web": ("Web・業務アプリ", '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/>'),
+    "db": ("データベース", '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>'),
+    "dev": ("開発・運用ツール", '<path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 5l-3 14"/>'),
+    "server": ("サーバー", '<rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.500h.01M7 16.500h.01"/>'),
+    "os": ("OS", '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'),
+    "lib": ("ライブラリ", '<path d="m12 3 9 5-9 5-9-5zM3 12l9 5 9-5M3 16l9 5 9-5"/>'),
+    "app": ("ソフトウェア", '<path d="m12 3 8 4.500v9L12 21l-8-4.500v-9z"/><path d="m4 7.5 8 4.5 8-4.500M12 12v9"/>'),
+}
+# 上から順に試し、最初に合った種類にする（「開発元 製品名」を小文字にして照合）
+ICON_RULES = [
+    ("ai", r"\bai\b|\bllm|litellm|monai|lightspeed|ollama|langchain"),
+    ("auth", r"keycloak|sign-on|\bsso\b|identity|active directory|ldap"),
+    ("mail", r"mail|exchange|postfix|outlook|zimbra"),
+    ("browser", r"chrome|chromium|firefox|\bedge\b|safari|webkit"),
+    ("security", r"checkpoint|check point|forti|palo ?alto|pan-os|sonicwall|sophos|ivanti|firewall|vpn|security|antivirus|defender"),
+    ("nas", r"synology|qnap|diskstation|\bnas\b|storage|backup"),
+    ("network", r"cisco|juniper|zyxel|tp-link|d-link|netgear|mikrotik|ubiquiti|router|switch|gateway"),
+    ("cloud", r"vmware|vcenter|esxi|openshift|kubernetes|docker|cloud|hyper-v|citrix|\bxen"),
+    ("web", r"sharepoint|wordpress|drupal|joomla|roller|portal|\bweb|nginx|http server|tomcat|redcap|\bcms\b|confluence"),
+    ("db", r"mysql|mariadb|postgres|database|redis|mongodb|\bsql|elasticsearch"),
+    ("dev", r"teamcity|jenkins|gitlab|github|\bgit\b|puppet|ansible|virtualenv|jetbrains|visual studio|\bnpm\b|\bpip\b"),
+    ("server", r"\bserver\b|jboss|application platform|syslog|ircd"),
+    ("os", r"windows|linux|macos|\bios\b|ipados|android|ubuntu|debian|\bos\b"),
+    ("lib", r"\blib|axis|openssl|csrf|\bsdk\b|library|log4j"),
+]
+
+
+def prod_icon(p):
+    """製品の種類を表すアイコン（インラインSVG）。どの規則にも合わなければ箱の絵にする。"""
+    key = f"{p['vendor']} {p['product']}".lower()
+    kind = next((k for k, pat in ICON_RULES if re.search(pat, key)), "app")
+    label, body = ICONS[kind]
+    return f'<svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><title>{label}</title>{body}</svg>'
+
+
 def sev_class(it):
     c = it["facts"].get("cvss")
     return (c["severity"].lower() if c and c.get("severity") else "none")
@@ -386,7 +431,7 @@ def build(root, out, cfg, items, now):
                                f"{name} の脆弱性情報の新着と追記。", f"p/{sl}.html"))
         w(f"p/{sl}.xml", rss(cfg, v["items"], f'{name} の脆弱性 | {cfg["site_name"]}', f"p/{sl}.xml"))
     plist = "".join(
-        f'<li><a href="p/{sl}.html">{E(v["p"]["product"])}</a><span>{E(v["p"]["vendor"])}</span><b>{len(v["items"])}</b></li>'
+        f'<li>{prod_icon(v["p"])}<a href="p/{sl}.html">{E(v["p"]["product"])}</a><span>{E(v["p"]["vendor"])}</span><b>{len(v["items"])}</b></li>'
         for sl, v in sorted(prod.items(), key=lambda kv: -len(kv[1]["items"])))
     w("products.html", page(cfg, "", "製品別の一覧",
                             f'<h1>製品別の一覧</h1><p>製品名を選ぶと、その製品の脆弱性だけを追えます。</p><ul class="plist">{plist}</ul>',
