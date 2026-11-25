@@ -4,6 +4,7 @@
   "tagline": "公的データベースの情報だけを要約。続報は同じページに追記します。",
   "site_url": "https://vulnwatch.pages.dev",
   "demo": false,
+  "google_site_verification": "tgb1heirq3qwZ5OUSjraeNyLkPkH2JB8l8-9vhmFBno",
   "filters": {
     "min_cvss": 7.0,
     "lookback_hours": 6,
