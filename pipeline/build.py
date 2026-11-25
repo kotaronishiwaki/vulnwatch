@@ -7,7 +7,7 @@ import shutil
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
-from . import thumb
+from . import insights, thumb
 from .store import sev_ja
 
 JST = timezone(timedelta(hours=9))
@@ -208,7 +208,7 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
 {demo}
 <header class="top"><div class="wrap">
 <a class="brand" href="{pre}index.html"><span class="pulse" aria-hidden="true"></span>{E(name)}</a>
-<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a>{nav_alerts}<a href="{pre}about.html">編集方針</a></nav>
+<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a><a href="{pre}insights.html">分析</a>{nav_alerts}<a href="{pre}about.html">編集方針</a></nav>
 </div></header>
 <main class="wrap">
 {body}
@@ -521,6 +521,10 @@ def build(root, out, cfg, items, now):
                             f'<h1>製品別の一覧</h1><p>製品名を選ぶと、その製品の脆弱性だけを追えます。</p><ul class="plist">{plist}</ul>',
                             "製品ごとの脆弱性一覧。", "products.html"))
 
+    # 分析（掲載中の件を項目ごとに数えたページ）
+    w("insights.html", page(cfg, "", "数字で見る脆弱性", insights.body(ordered, now, icon_kind, ICONS),
+                            "掲載中の脆弱性を、種類、攻撃の条件、開発元などで数えた集計。", "insights.html"))
+
     # 固定ページ
     pay = cfg.get("payments", {})
     def paybtn(key, text):
@@ -557,7 +561,7 @@ def build(root, out, cfg, items, now):
 
     w("feed.xml", rss(cfg, ordered, cfg["site_name"], "feed.xml"))
     base = cfg["site_url"].rstrip("/")
-    urls = [f"{base}/"] + [f'{base}/v/{i["id"]}.html' for i in ordered] + [f"{base}/p/{s}.html" for s in prod]
+    urls = [f"{base}/", f"{base}/insights.html"] + [f'{base}/v/{i["id"]}.html' for i in ordered] + [f"{base}/p/{s}.html" for s in prod]
     w("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
       "".join(f"<url><loc>{E(u)}</loc></url>" for u in urls) + "</urlset>")
     w("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
