@@ -130,6 +130,9 @@ def _wrap(d, text, font_at, max_w, max_h, sizes, max_lines=3):
     return f, lines
 
 
+_BG = {}
+
+
 def hero_image(path, shape, *, sev, kind, cve, badge, exploited, vendor, name, site):
     """1枚作って保存する。作れたら True。
 
@@ -160,17 +163,19 @@ def hero_image(path, shape, *, sev, kind, cve, badge, exploited, vendor, name, s
     oy = (H - pic) // 2
     cx, cy = ox + pic // 2, oy + pic // 2
     col = SEV_COL.get(sev, SEV_COL["none"])
-    # 背景: 濃紺の縦グラデーション + 右側に深刻度の色の光 + 薄い方眼
-    img = Image.new("RGB", (1, 2))
-    img.putpixel((0, 0), (20, 32, 56))
-    img.putpixel((0, 1), (6, 10, 20))
-    img = img.resize((W, H), Image.BILINEAR)
-    glow = Image.new("RGB", (W, H), (0, 0, 0))
-    gd = ImageDraw.Draw(glow)
-    gd.ellipse([cx - 300, cy - 300, cx + 300, cy + 300], fill=tuple(int(c * 0.75) for c in col))
-    gd.polygon([(0, H), (0, H - 150), (520, H)], fill=tuple(int(c * 0.5) for c in col))
-    glow = glow.filter(ImageFilter.GaussianBlur(110))
-    img = Image.composite(glow, img, glow.convert("L").point(lambda v: min(255, int(v * 1.6))))
+    # 背景: 濃紺の縦グラデーション + 右側に深刻度の色の光
+    if (shape, sev) not in _BG:
+        bg = Image.new("RGB", (1, 2))
+        bg.putpixel((0, 0), (20, 32, 56))
+        bg.putpixel((0, 1), (6, 10, 20))
+        bg = bg.resize((W, H), Image.BILINEAR)
+        glow = Image.new("RGB", (W, H), (0, 0, 0))
+        gd = ImageDraw.Draw(glow)
+        gd.ellipse([cx - 300, cy - 300, cx + 300, cy + 300], fill=tuple(int(c * 0.75) for c in col))
+        gd.polygon([(0, H), (0, H - 150), (520, H)], fill=tuple(int(c * 0.5) for c in col))
+        glow = glow.filter(ImageFilter.GaussianBlur(110))
+        _BG[(shape, sev)] = Image.composite(glow, bg, glow.convert("L").point(lambda v: min(255, int(v * 1.6))))
+    img = _BG[(shape, sev)].copy()
     d = ImageDraw.Draw(img, "RGBA")
     for x in range(0, W, 64):
         d.line([(x, 0), (x, H)], fill=(255, 255, 255, 12))
@@ -208,7 +213,9 @@ def hero_image(path, shape, *, sev, kind, cve, badge, exploited, vendor, name, s
 
     # 下: 「脆弱性」とCVE番号（横長では1行に並べる）、右下にサイト名
     fv, fc = font_at(64), font_at(58)
-    if wide:
+    if name == cve:  # CVE番号を上に大きく出した場合は、下には繰り返さない
+        d.text((64, H - 52 if wide else H - 60), "脆弱性", font=fv, fill=YELLOW, stroke_width=5, stroke_fill=(0, 0, 0), anchor="ls")
+    elif wide:
         d.text((64, H - 52), "脆弱性", font=fv, fill=YELLOW, stroke_width=5, stroke_fill=(0, 0, 0), anchor="ls")
         d.text((64 + d.textlength("脆弱性", font=fv) + 36, H - 52), cve, font=fc, fill=(255, 255, 255),
                stroke_width=5, stroke_fill=(0, 0, 0), anchor="ls")

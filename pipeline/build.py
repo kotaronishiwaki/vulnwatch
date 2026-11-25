@@ -192,6 +192,7 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="max-image-preview:large">
 <title>{E(full)}</title>
 <meta name="description" content="{E(desc[:150])}">
 <link rel="canonical" href="{E(url)}">
@@ -287,12 +288,15 @@ def item_page(cfg, it):
     first_prod = (f.get("products") or [{}])[0].get("product")
     ai_note = "AIが出典から要約し、数値を機械照合しています。" if s.get("ai") else "定型文による自動要約です。"
     orig = f'<details><summary>公式の説明（英語の原文）</summary><p lang="en">{E(f["desc_en"])}</p></details>' if f.get("desc_en") else ""
-    jsonld = '<script type="application/ld+json">' + json.dumps({
+    ld = {
         "@context": "https://schema.org", "@type": "TechArticle", "headline": s["title"],
         "datePublished": it["first_seen"], "dateModified": it["updated"], "inLanguage": "ja",
         "mainEntityOfPage": url, "description": s["summary"],
         "author": {"@type": "Organization", "name": cfg["site_name"]},
-        "publisher": {"@type": "Organization", "name": cfg["site_name"]}}, ensure_ascii=False) + "</script>"
+        "publisher": {"@type": "Organization", "name": cfg["site_name"]}}
+    if it["id"] in cfg.get("_og", ()):
+        ld["image"] = [f'{cfg["site_url"].rstrip("/")}/og/{it["id"]}.jpg']
+    jsonld = '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + "</script>"
     n_upd = sum(1 for t in it["timeline"] if t["kind"] == "update")
     body = f'''<article class="detail s-{sev_class(it)}">
 <p class="crumbs"><a href="{pre}index.html">新着</a> / <span class="id">{it["id"]}</span></p>
@@ -315,7 +319,7 @@ def item_page(cfg, it):
 {ad(cfg, "slot_article")}
 {sponsor(cfg, pre)}
 </article>'''
-    og = f'og/{it["id"]}.png' if cfg.get("_og") else ""
+    og = f'og/{it["id"]}.jpg' if it["id"] in cfg.get("_og", ()) else ""
     return page(cfg, pre, f'{s["title"]}（{it["id"]}）', body, s["summary"], f'v/{it["id"]}.html', og, jsonld)
 
 
@@ -329,59 +333,6 @@ def rss(cfg, items, title, self_path):
         pub = dt(it["updated"]).strftime("%a, %d %b %Y %H:%M:%S +0000")
         ents.append(f'<item><title>{E(pref + it["summary"]["title"])}（{it["id"]}）</title><link>{base}/v/{it["id"]}.html</link><guid isPermaLink="false">{it["id"]}-{len(it["timeline"])}</guid><pubDate>{pub}</pubDate><description>{E(desc)}</description></item>')
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>{E(title)}</title><link>{base}/</link><description>{E(cfg.get("tagline", ""))}</description><language>ja</language><atom:link href="{base}/{self_path}" rel="self" type="application/rss+xml"/>{"".join(ents)}</channel></rss>'
-
-
-def og_image(cfg, it, path):
-    try:
-        from PIL import Image, ImageDraw, ImageFont
-    except ImportError:
-        return False
-    col = {"critical": (200, 16, 46), "high": (217, 98, 0), "medium": (168, 124, 0),
-           "low": (38, 120, 78), "none": (90, 100, 120)}[sev_class(it)]
-    jp = next((p for p in (
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
-        "/usr/share/fonts/noto-cjk/NotoSansCJK-Bold.ttc",
-        "/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc",
-        "/System/Library/Fonts/ヒラギノ角ゴシック W6.ttc") if os.path.exists(p)), None)
-    latin = next((p for p in ("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",) if os.path.exists(p)), None)
-    def font(size, need_jp=False):
-        p = jp or (None if need_jp else latin)
-        return ImageFont.truetype(p, size) if p else None
-    img = Image.new("RGB", (1200, 630), (16, 26, 43))
-    d = ImageDraw.Draw(img)
-    d.rectangle([0, 0, 28, 630], fill=col)
-    fid = font(74) or ImageFont.load_default()
-    d.text((80, 70), it["id"], font=fid, fill=(255, 255, 255))
-    c = it["facts"].get("cvss")
-    y = 190
-    if c:
-        fs = font(46) or ImageFont.load_default()
-        label = f'CVSS {c["score"]}  {sev_ja(c["severity"]) if jp else c["severity"]}'
-        w = d.textlength(label, font=fs)
-        d.rounded_rectangle([80, y, 80 + w + 48, y + 76], 12, fill=col)
-        d.text((104, y + 10), label, font=fs, fill=(255, 255, 255))
-        if it["facts"].get("kev"):
-            k = "悪用確認" if jp else "EXPLOITED"
-            x = 80 + w + 72
-            w2 = d.textlength(k, font=fs)
-            d.rounded_rectangle([x, y, x + w2 + 48, y + 76], 12, outline=(255, 255, 255), width=3)
-            d.text((x + 24, y + 10), k, font=fs, fill=(255, 255, 255))
-    ft = font(50, need_jp=True)
-    if ft:
-        title, line, yy = it["summary"]["title"], "", 320
-        lines = []
-        for ch in title:
-            if d.textlength(line + ch, font=ft) > 1040:
-                lines.append(line)
-                line = ""
-            line += ch
-        lines.append(line)
-        for ln in lines[:3]:
-            d.text((80, yy), ln, font=ft, fill=(232, 238, 248))
-            yy += 68
-        d.text((80, 548), cfg["site_name"], font=font(34, True), fill=(150, 168, 196))
-    img.save(path, optimize=True)
-    return True
 
 
 def slide_name(it):
@@ -417,6 +368,22 @@ def featured(ordered, n):
     return pick[:n]
 
 
+def thumb_args(cfg, it):
+    """記事1件ぶんの、サムネイル風画像の材料。"""
+    f = it["facts"]
+    c, kev = f.get("cvss"), f.get("kev") or {}
+    # 何の製品か分からない件は、CVE番号を大きく出す（「対象製品 の脆弱性」とは書かない）
+    vendor, name = slide_name(it) or ("", it["id"])
+    return dict(sev=sev_class(it), kind=icon_kind(f"{vendor} {name}"), cve=it["id"],
+                badge=f'{sev_ja(c["severity"])} {c["score"]}' if c else "",
+                exploited=bool(kev), vendor=vendor, name=name, site=cfg["site_name"])
+
+
+def og_image(cfg, out, it):
+    """共有用の画像（16:9、1280x720）。検索やSNSで記事の絵として使われる。作れたら True。"""
+    return thumb.hero_image(os.path.join(out, "og", f'{it["id"]}.jpg'), "tall", **thumb_args(cfg, it))
+
+
 def slides(cfg, out, ordered):
     """トップのスライド。画像を作れた件だけ並べる（Pillowやフォントが無ければ出さない）。"""
     n = cfg.get("hero", {}).get("count", 5)
@@ -424,22 +391,20 @@ def slides(cfg, out, ordered):
         return ""
     cells = []
     for it in featured(ordered, n):
-        f = it["facts"]
-        c, kev = f.get("cvss"), f.get("kev") or {}
-        vendor, name = slide_name(it)
-        badge = f'{sev_ja(c["severity"])} {c["score"]}' if c else ""
-        args = dict(sev=sev_class(it), kind=icon_kind(f"{vendor} {name}"), cve=it["id"], badge=badge,
-                    exploited=bool(kev), vendor=vendor, name=name, site=cfg["site_name"])
-        # パソコン向けの横長と、スマホ向けの16:9。どちらも作れた件だけ載せる
-        if not all(thumb.hero_image(os.path.join(out, "hero", f'{it["id"]}-{sh}.jpg'), sh, **args)
-                   for sh in ("wide", "tall")):
+        # スマホ向けの16:9は記事の共有用画像と同じもの。パソコン向けの横長だけここで作る
+        if it["id"] not in cfg["_og"] and og_image(cfg, out, it):
+            cfg["_og"].add(it["id"])
+        if it["id"] not in cfg["_og"] or not thumb.hero_image(
+                os.path.join(out, "hero", f'{it["id"]}.jpg'), "wide", **thumb_args(cfg, it)):
             continue
+        a = thumb_args(cfg, it)
+        badge, kev = a["badge"], a["exploited"]
         alt = " ".join(filter(None, [badge, "悪用確認" if kev else "", it["summary"]["title"], it["id"]]))
         lazy = ' loading="lazy"' if cells else ' fetchpriority="high"'
         (ww, wh), (tw, th) = thumb.SIZES["wide"], thumb.SIZES["tall"]
         cells.append(f'<a class="slide" href="v/{it["id"]}.html"><picture>'
-                     f'<source media="(min-width: 720px)" srcset="hero/{it["id"]}-wide.jpg" width="{ww}" height="{wh}">'
-                     f'<img src="hero/{it["id"]}-tall.jpg" width="{tw}" height="{th}" alt="{E(alt)}"{lazy}></picture></a>')
+                     f'<source media="(min-width: 720px)" srcset="hero/{it["id"]}.jpg" width="{ww}" height="{wh}">'
+                     f'<img src="og/{it["id"]}.jpg" width="{tw}" height="{th}" alt="{E(alt)}"{lazy}></picture></a>')
     if not cells:
         return ""
     return f'''<section class="slides" aria-roledescription="carousel" aria-label="注目の脆弱性">
@@ -464,11 +429,8 @@ def build(root, out, cfg, items, now):
     ordered = sorted(items.values(), key=lambda i: i["updated"], reverse=True)
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    # 共有用の画像。1枚でも作れたら、記事ページに画像の指定を入れる。
-    cfg["_og"] = False
-    for it in ordered[:300]:
-        if og_image(cfg, it, os.path.join(out, "og", f'{it["id"]}.png')):
-            cfg["_og"] = True
+    # 共有用の画像（新しい300件）。作れた記事のページにだけ、画像の指定を入れる。
+    cfg["_og"] = {it["id"] for it in ordered[:300] if og_image(cfg, out, it)}
 
     for it in ordered:
         w(f'v/{it["id"]}.html', item_page(cfg, it))

@@ -2,7 +2,7 @@
   "site_name": "脆弱性ウォッチ",
   "headline": "いま対応が要る脆弱性を、1時間ごとに。",
   "tagline": "公的データベースの情報だけを要約。続報は同じページに追記します。",
-  "site_url": "https://example.pages.dev",
+  "site_url": "https://vulnwatch.pages.dev",
   "demo": false,
   "filters": {
     "min_cvss": 7.0,
