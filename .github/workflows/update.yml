@@ -77,6 +77,8 @@ jobs:
           CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
         run: |
           P="${CF_PAGES_PROJECT:-vulnwatch}"
-          # 置き場所（プロジェクト）が無ければ作る。すでにあれば失敗するので無視して進む
-          npx --yes wrangler@4 pages project create "$P" --production-branch=main || true
+          # 置き場所（プロジェクト）が無ければ作る。すでにある場合の「既に存在します」は
+          # 毎回出て紛らわしいので表示しない。本当の問題（権限など）は次の公開で表示される
+          npx --yes wrangler@4 pages project create "$P" --production-branch=main >/dev/null 2>&1 \
+            || echo "プロジェクト $P は作成済みです。公開に進みます。"
           npx --yes wrangler@4 pages deploy public --project-name="$P" --branch=main
