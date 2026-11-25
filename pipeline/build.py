@@ -186,8 +186,7 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
     adsense = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={E(ads)}" crossorigin="anonymous"></script>' if ads else ""
     ogimg = f'<meta property="og:image" content="{cfg["site_url"].rstrip("/")}/{og}"><meta name="twitter:card" content="summary_large_image">' if og else '<meta name="twitter:card" content="summary">'
     gsv = cfg.get("google_site_verification")  # Search Console の所有権確認用
-    verify = f'
-<meta name="google-site-verification" content="{E(gsv)}">' if gsv else ""
+    verify = f'<meta name="google-site-verification" content="{E(gsv)}">' if gsv else ""
     nav_alerts = f'<a href="{pre}alerts.html">メール通知</a>' if alerts_on(cfg) else ""
     demo = '<div class="demo">サンプルデータで表示しています。製品名とCVE番号は架空のものです。</div>' if cfg.get("demo") else ""
     return f'''<!DOCTYPE html>
