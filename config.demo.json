@@ -1,7 +1,7 @@
 {
   "site_name": "脆弱性ウォッチ",
   "headline": "いま対応が要る脆弱性を、1時間ごとに。",
-  "tagline": "公的データベースの情報だけをAIが日本語で要約。続報は同じページに追記します。",
+  "tagline": "公的データベースの情報だけを要約。続報は同じページに追記します。",
   "site_url": "https://example.pages.dev",
   "demo": true,
   "filters": {
