@@ -9,6 +9,7 @@
 import json
 import os
 import re
+import urllib.error
 import urllib.request
 
 from .store import sev_ja
@@ -25,6 +26,14 @@ SYSTEM = """あなたは脆弱性情報の編集者です。渡されたJSONの�
   summary: 何が問題かを2〜3文で
   impact: 悪用されると何が起きるかを1〜2文で
   action: 利用者が取るべき対応を1〜2文で（修正版の番号はJSONにある場合のみ）"""
+
+# 出力の形をAPI側で固定する（JSON以外の文章や、キーの欠けを防ぐ）
+OUT_SCHEMA = {
+    "type": "object",
+    "properties": {k: {"type": "string"} for k in ("title", "summary", "impact", "action")},
+    "required": ["title", "summary", "impact", "action"],
+    "additionalProperties": False,
+}
 
 NUM = re.compile(r"CVE-\d{4}-\d+|\d+(?:\.\d+)+|\d{3,}")
 
@@ -63,17 +72,26 @@ def call_ai(model, payload):
     if fx:  # 試験用: 用意した応答を返す（検証の動作確認に使う）
         with open(os.path.join(fx, "ai.json"), encoding="utf-8") as f:
             return json.load(f).get(json.loads(payload)["cve"], {})
+    # このモデルは既定で「考える」処理が入り、その分も max_tokens から引かれる。
+    # 上限が小さいと本文が途中で切れるので、余裕を持たせて effort を下げる。
     body = json.dumps({
-        "model": model, "max_tokens": 700, "system": SYSTEM,
+        "model": model, "max_tokens": 4000, "system": SYSTEM,
+        "output_config": {"effort": "low", "format": {"type": "json_schema", "schema": OUT_SCHEMA}},
         "messages": [{"role": "user", "content": payload}],
     }).encode()
     req = urllib.request.Request(API_URL, data=body, headers={
         "content-type": "application/json",
         "x-api-key": os.environ["ANTHROPIC_API_KEY"],
         "anthropic-version": "2023-06-01"})
-    with urllib.request.urlopen(req, timeout=60) as r:
-        res = json.loads(r.read())
-    text = "".join(b.get("text", "") for b in res.get("content", []))
+    try:
+        with urllib.request.urlopen(req, timeout=120) as r:
+            res = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        # 理由（残高不足、設定の誤りなど）はAPIの返答の本文にあるので、ログに残す
+        raise RuntimeError(f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}") from None
+    if res.get("stop_reason") != "end_turn":
+        raise RuntimeError(f"応答が完了していません（stop_reason={res.get('stop_reason')}）")
+    text = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
     m = re.search(r"\{.*\}", text, re.S)
     return json.loads(m.group(0)) if m else {}
 
