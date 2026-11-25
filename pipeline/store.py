@@ -93,6 +93,16 @@ def is_major_new(facts):
     return bool(facts.get("kev")) or score >= 9.0
 
 
+def visible(item, cfg):
+    """サイトに載せる件か。CVSSが基準以上、または悪用確認済み（KEV）のものだけ載せる。
+
+    基準外の件も data/ には残す。後からスコアが上がるかKEVに入れば、その時点で掲載される。
+    """
+    f = item["facts"]
+    score = (f.get("cvss") or {}).get("score") or 0
+    return bool(f.get("kev")) or score >= cfg.get("filters", {}).get("min_cvss", 7.0)
+
+
 def merge(root, collected, now):
     """取得した事実を保存データへ反映する。返り値: 今回の出来事のリスト"""
     items = load_all(root)

@@ -33,7 +33,7 @@ a = ap.parse_args()
 
 with open(a.config, encoding="utf-8") as f:
     cfg = json.load(f)
-items = store.load_all(a.data)
+items = {k: it for k, it in store.load_all(a.data).items() if store.visible(it, cfg)}
 if not items:
     sys.exit(f"記事がありません。先に run.py を実行してください（{a.data}/ が空）。")
 

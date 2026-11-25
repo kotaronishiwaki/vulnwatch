@@ -99,7 +99,7 @@ def run(items, cfg, save):
     limit = cfg["ai"].get("max_per_run", 40)
     fx = os.environ.get("FIXTURES")
     use_ai = bool(os.environ.get("ANTHROPIC_API_KEY")) or bool(fx and os.path.exists(os.path.join(fx, "ai.json")))
-    done = 0
+    done = rejected = 0
     for it in items.values():
         if not it.get("needs_summary"):
             continue
@@ -113,6 +113,7 @@ def run(items, cfg, save):
                     out = {k: cand[k].strip() for k in ("title", "summary", "impact", "action")}
                     out["ai"] = True
                 else:
+                    rejected += 1
                     print(f"[info] {it['id']}: AI要約を不採用（{why}）")
             except Exception as e:
                 print(f"[warn] {it['id']}: AI呼び出しに失敗（{e}）")
@@ -127,3 +128,5 @@ def run(items, cfg, save):
         it["summary"] = out
         it["needs_summary"] = use_ai and not out["ai"] and done >= limit  # 上限超過分は次回に回す
         save(it)
+    if use_ai:
+        print(f"[info] AI要約 {done}件を処理（不採用 {rejected}件）")
