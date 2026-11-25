@@ -1,0 +1,74 @@
+name: update
+on:
+  schedule:
+    - cron: "7 * * * *"   # 毎時7分（混雑する0分を避ける）
+  workflow_dispatch:
+    inputs:
+      test_alert_to:
+        description: "メール通知の試験: 送り先のアドレス（空なら通常の更新のみ）"
+        required: false
+      test_alert_watch:
+        description: "メール通知の試験: 監視する製品名（空白区切り）"
+        required: false
+        default: "wordpress"
+concurrency:
+  group: update
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 共有画像用のフォントとライブラリ
+        run: |
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          pip install pillow
+      - name: 取得・要約・生成・投稿
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+          BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
+          BSKY_APP_PASSWORD: ${{ secrets.BSKY_APP_PASSWORD }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          SUBSCRIBERS_JSON: ${{ secrets.SUBSCRIBERS_JSON }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          SMTP_SECURITY: ${{ vars.SMTP_SECURITY }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+        run: python run.py
+      - name: メール通知の試験送信
+        if: ${{ inputs.test_alert_to != '' }}
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          SMTP_SECURITY: ${{ vars.SMTP_SECURITY }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          TEST_TO: ${{ inputs.test_alert_to }}
+          TEST_WATCH: ${{ inputs.test_alert_watch }}
+        run: python alert_test.py --to "$TEST_TO" --watch $TEST_WATCH
+      - name: 記事データを保存
+        run: |
+          git config user.name "vulnwatch-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || git commit -m "data: $(date -u +%FT%RZ)"
+          git push
+      - name: Cloudflare Pages へ公開
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy public --project-name=${{ vars.CF_PAGES_PROJECT }}
