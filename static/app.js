@@ -22,6 +22,40 @@
     });
     if (q) q.addEventListener('input', apply);
   }
+  // トップのスライド: 5秒ごとに送る。触っている間と「動きを減らす」設定のときは止める。
+  var track = document.getElementById('slides'), nav = document.getElementById('slides-nav');
+  if (track && nav && track.children.length > 1) {
+    var n = track.children.length, cur = 0, timer = null, dots = nav.querySelector('.dots');
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var go = function (i) {
+      cur = (i + n) % n;
+      track.scrollTo({ left: cur * track.clientWidth, behavior: calm ? 'auto' : 'smooth' });
+    };
+    var mark = function () {
+      cur = Math.round(track.scrollLeft / track.clientWidth);
+      dots.querySelectorAll('button').forEach(function (b, i) { b.classList.toggle('on', i === cur); });
+    };
+    var start = function () { if (!calm && !timer) timer = setInterval(function () { go(cur + 1); }, 5000); };
+    var stop = function () { clearInterval(timer); timer = null; };
+    for (var i = 0; i < n; i++) (function (i) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', (i + 1) + '枚目を表示');
+      b.addEventListener('click', function () { go(i); });
+      dots.appendChild(b);
+    })(i);
+    nav.querySelectorAll('button[data-d]').forEach(function (b) {
+      b.addEventListener('click', function () { go(cur + Number(b.dataset.d)); });
+    });
+    var box = track.parentNode;
+    ['pointerenter', 'focusin', 'touchstart'].forEach(function (e) { box.addEventListener(e, stop, { passive: true }); });
+    ['pointerleave', 'focusout'].forEach(function (e) { box.addEventListener(e, start); });
+    document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
+    track.addEventListener('scroll', mark, { passive: true });
+    nav.hidden = false;
+    mark();
+    start();
+  }
   var copy = document.getElementById('copy');
   if (copy) copy.addEventListener('click', function () {
     var done = function (t) { copy.textContent = t; setTimeout(function () { copy.textContent = 'リンクをコピー'; }, 1800); };

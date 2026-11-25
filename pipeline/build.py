@@ -7,6 +7,7 @@ import shutil
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
+from . import thumb
 from .store import sev_ja
 
 JST = timezone(timedelta(hours=9))
@@ -63,11 +64,15 @@ ICON_RULES = [
 ]
 
 
+def icon_kind(text):
+    """文字列（開発元と製品名など）から種類を決める。どの規則にも合わなければ app。"""
+    key = text.lower()
+    return next((k for k, pat in ICON_RULES if re.search(pat, key)), "app")
+
+
 def prod_icon(p):
     """製品の種類を表すアイコン（インラインSVG）。どの規則にも合わなければ箱の絵にする。"""
-    key = f"{p['vendor']} {p['product']}".lower()
-    kind = next((k for k, pat in ICON_RULES if re.search(pat, key)), "app")
-    label, body = ICONS[kind]
+    label, body = ICONS[icon_kind(f"{p['vendor']} {p['product']}")]
     return f'<svg class="pico" viewBox="0 0 24 24" aria-hidden="true"><title>{label}</title>{body}</svg>'
 
 
@@ -371,11 +376,75 @@ def og_image(cfg, it, path):
     return True
 
 
+def slide_name(it):
+    """スライドに大きく出す (開発元, 名前)。何の製品か分からない件は None。"""
+    f = it["facts"]
+    kev, ps = f.get("kev") or {}, f.get("products") or []
+    if ps:
+        return ps[0]["vendor"], ps[0]["product"]
+    if kev.get("product"):
+        return kev.get("vendor", ""), kev["product"]
+    if it["summary"].get("ai") or f.get("jvn"):  # 製品情報は無いが、中身のある見出しがある
+        return "", it["summary"]["title"]
+    return None
+
+
+def featured(ordered, n):
+    """スライドに出す件。悪用確認済みか緊急（CVSS 9.0以上）のものを新しい順に n 件。
+    3件に満たないときは、残りの新しい件で3件まで埋める。製品が分からない件は出さない。"""
+    def hot(it):
+        f = it["facts"]
+        return bool(f.get("kev")) or ((f.get("cvss") or {}).get("score") or 0) >= 9.0
+    pick, seen = [], set()
+    # 悪用確認・緊急の件を先に選び、足りなければ残りで3件まで埋める。
+    # 同じ製品が続くと同じ絵が並ぶので、製品ごとに1件だけにする。
+    for want, limit in ((True, n), (False, min(n, 3))):
+        for it in ordered:
+            nm = slide_name(it)
+            if len(pick) >= limit:
+                break
+            if nm and nm not in seen and hot(it) == want:
+                seen.add(nm)
+                pick.append(it)
+    return pick[:n]
+
+
+def slides(cfg, out, ordered):
+    """トップのスライド。画像を作れた件だけ並べる（Pillowやフォントが無ければ出さない）。"""
+    n = cfg.get("hero", {}).get("count", 5)
+    if n <= 0:
+        return ""
+    cells = []
+    for it in featured(ordered, n):
+        f = it["facts"]
+        c, kev = f.get("cvss"), f.get("kev") or {}
+        vendor, name = slide_name(it)
+        badge = f'{sev_ja(c["severity"])} {c["score"]}' if c else ""
+        args = dict(sev=sev_class(it), kind=icon_kind(f"{vendor} {name}"), cve=it["id"], badge=badge,
+                    exploited=bool(kev), vendor=vendor, name=name, site=cfg["site_name"])
+        # パソコン向けの横長と、スマホ向けの16:9。どちらも作れた件だけ載せる
+        if not all(thumb.hero_image(os.path.join(out, "hero", f'{it["id"]}-{sh}.jpg'), sh, **args)
+                   for sh in ("wide", "tall")):
+            continue
+        alt = " ".join(filter(None, [badge, "悪用確認" if kev else "", it["summary"]["title"], it["id"]]))
+        lazy = ' loading="lazy"' if cells else ' fetchpriority="high"'
+        (ww, wh), (tw, th) = thumb.SIZES["wide"], thumb.SIZES["tall"]
+        cells.append(f'<a class="slide" href="v/{it["id"]}.html"><picture>'
+                     f'<source media="(min-width: 720px)" srcset="hero/{it["id"]}-wide.jpg" width="{ww}" height="{wh}">'
+                     f'<img src="hero/{it["id"]}-tall.jpg" width="{tw}" height="{th}" alt="{E(alt)}"{lazy}></picture></a>')
+    if not cells:
+        return ""
+    return f'''<section class="slides" aria-roledescription="carousel" aria-label="注目の脆弱性">
+<div class="slides-track" id="slides" tabindex="0">{"".join(cells)}</div>
+<div class="slides-nav" id="slides-nav" hidden><button type="button" data-d="-1" aria-label="前のスライド">‹</button><span class="dots"></span><button type="button" data-d="1" aria-label="次のスライド">›</button></div>
+</section>'''
+
+
 def build(root, out, cfg, items, now):
     here = os.path.dirname(os.path.abspath(__file__))
     if os.path.exists(out):
         shutil.rmtree(out)
-    for d in ("v", "p", "m", "og", "static"):
+    for d in ("v", "p", "m", "og", "hero", "static"):
         os.makedirs(os.path.join(out, d))
     for fn in ("style.css", "app.js"):
         shutil.copy(os.path.join(here, "..", "static", fn), os.path.join(out, "static", fn))
@@ -409,6 +478,7 @@ def build(root, out, cfg, items, now):
 <dl class="stats"><div><dt>新着</dt><dd>{new24}</dd></div><div><dt>追記</dt><dd>{upd24}</dd></div><div><dt>悪用確認</dt><dd>{kev24}</dd></div></dl>
 <p class="fine">数字は直近24時間。最終確認 <time datetime="{stamp}">{jst(stamp)}</time>（1時間ごとに自動更新）</p>
 </section>
+{slides(cfg, out, ordered)}
 {sponsor(cfg, "")}'''
     w("index.html", page(cfg, "", cfg["site_name"],
                          head + list_block(ordered[:100], "", cfg) + alert_cta(cfg, "") +
