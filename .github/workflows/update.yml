@@ -67,8 +67,12 @@ jobs:
           git diff --cached --quiet || git commit -m "data: $(date -u +%FT%RZ)"
           git push
       - name: Cloudflare Pages へ公開
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy public --project-name=${{ vars.CF_PAGES_PROJECT }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+        run: |
+          P="${CF_PAGES_PROJECT:-vulnwatch}"
+          # 置き場所（プロジェクト）が無ければ作る。すでにあれば失敗するので無視して進む
+          npx --yes wrangler@4 pages project create "$P" --production-branch=main || true
+          npx --yes wrangler@4 pages deploy public --project-name="$P" --branch=main
