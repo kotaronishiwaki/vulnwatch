@@ -107,10 +107,16 @@ def card(it, pre):
     note = ""
     if last["kind"] == "update":
         note = f'<p class="note"><b>追記</b> {E(last["changes"][0])}</p>'
+    # 対象製品（先頭の1つ）をアイコンつきで出す。カード全体がリンクなので、ここはリンクにしない
+    ps = f.get("products") or []
+    prod = ""
+    if ps:
+        more = f'<small>ほか{len(ps) - 1}製品</small>' if len(ps) > 1 else ""
+        prod = f'<p class="prod">{prod_icon(ps[0])}<span>{E(ps[0]["vendor"])} {E(ps[0]["product"])}</span>{more}</p>'
     return f'''<article class="card s-{sev_class(it)}" data-flags="{flags}" data-text="{E((it["id"] + " " + s["title"] + " " + prods).lower())}">
 <a class="card-link" href="{pre}v/{it["id"]}.html">
 <div class="meta"><span class="id">{it["id"]}</span><time datetime="{it["updated"]}">{jst(it["updated"])}</time></div>
-<h2>{E(s["title"])}</h2>
+{prod}<h2>{E(s["title"])}</h2>
 <p class="lead">{E(s["summary"])}</p>
 {note}
 <div class="chips">{chips(it)}</div>
