@@ -35,6 +35,10 @@ OUT_SCHEMA = {
     "additionalProperties": False,
 }
 
+# 日本語の要約に出てくるはずのない文字（ハングル、キリル、アラビア、タイなど）。
+# 出典にその文字がある場合（製品名など）だけ許す。
+FOREIGN = re.compile("[\u0400-\u052f\u0590-\u06ff\u0900-\u097f\u0e00-\u0e7f\u1100-\u11ff\u3130-\u318f\uac00-\ud7af]")
+
 NUM = re.compile(r"CVE-\d{4}-\d+|\d+(?:\.\d+)+|\d{3,}")
 
 
@@ -53,8 +57,16 @@ def _facts_for_ai(it):
     }
 
 
+def script_ok(text, facts_json):
+    """日本語以外の文字が紛れ込んでいないか。返り値: (問題なしか, 理由)"""
+    for ch in FOREIGN.findall(text):
+        if ch not in facts_json:
+            return False, f"日本語以外の文字: {ch}"
+    return True, ""
+
+
 def verify(out, facts_json):
-    """出力中の番号・数値がすべて事実データにあるかを確かめる。"""
+    """出力中の番号・数値がすべて事実データにあるか、日本語以外の文字が無いかを確かめる。"""
     for key in ("title", "summary", "impact", "action"):
         if not isinstance(out.get(key), str) or not out[key].strip():
             return False, f"{key} が空"
@@ -64,7 +76,7 @@ def verify(out, facts_json):
     for tok in NUM.findall(text):
         if tok not in facts_json:
             return False, f"事実データに無い値: {tok}"
-    return True, ""
+    return script_ok(text, facts_json)
 
 
 def call_ai(model, payload):
@@ -118,6 +130,15 @@ def run(items, cfg, save):
     fx = os.environ.get("FIXTURES")
     use_ai = bool(os.environ.get("ANTHROPIC_API_KEY")) or bool(fx and os.path.exists(os.path.join(fx, "ai.json")))
     done = rejected = 0
+    # 以前に採用したAI要約も、文字の確認だけやり直す。引っかかった件は今回要約し直す。
+    for it in items.values():
+        s = it.get("summary") or {}
+        if s.get("ai") and not it.get("needs_summary"):
+            ok, why = script_ok(" ".join(s[k] for k in ("title", "summary", "impact", "action")),
+                                json.dumps(_facts_for_ai(it), ensure_ascii=False))
+            if not ok:
+                print(f"[info] {it['id']}: 採用済みのAI要約を作り直します（{why}）")
+                it["needs_summary"] = True
     for it in items.values():
         if not it.get("needs_summary"):
             continue
