@@ -163,7 +163,14 @@ def affiliate(cfg, it):
     return f'<aside class="aff"><span class="pr">PR</span><h3>対策に役立つ製品・サービス</h3><ul>{rows}</ul><p class="fine">このリンクから申し込むと、当サイトに紹介料が入ることがあります。記事の内容は紹介料の影響を受けません。</p></aside>'
 
 
+def alerts_on(cfg):
+    """メール通知を案内・送信するか（config の alerts.enabled。未設定なら出さない）。"""
+    return bool(cfg.get("alerts", {}).get("enabled"))
+
+
 def alert_cta(cfg, pre, product=None):
+    if not alerts_on(cfg):
+        return ""
     pay = cfg.get("payments", {})
     target = f"{E(product)} の" if product else "使っている製品の"
     return f'''<aside class="cta"><h3>{target}脆弱性だけを、メールで受け取る</h3>
@@ -178,6 +185,7 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
     ads = cfg.get("ads", {}).get("adsense_client")
     adsense = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={E(ads)}" crossorigin="anonymous"></script>' if ads else ""
     ogimg = f'<meta property="og:image" content="{cfg["site_url"].rstrip("/")}/{og}"><meta name="twitter:card" content="summary_large_image">' if og else '<meta name="twitter:card" content="summary">'
+    nav_alerts = f'<a href="{pre}alerts.html">メール通知</a>' if alerts_on(cfg) else ""
     demo = '<div class="demo">サンプルデータで表示しています。製品名とCVE番号は架空のものです。</div>' if cfg.get("demo") else ""
     return f'''<!DOCTYPE html>
 <html lang="ja">
@@ -200,7 +208,7 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
 {demo}
 <header class="top"><div class="wrap">
 <a class="brand" href="{pre}index.html"><span class="pulse" aria-hidden="true"></span>{E(name)}</a>
-<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a><a href="{pre}alerts.html">メール通知</a><a href="{pre}about.html">編集方針</a></nav>
+<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a>{nav_alerts}<a href="{pre}about.html">編集方針</a></nav>
 </div></header>
 <main class="wrap">
 {body}
@@ -517,7 +525,8 @@ def build(root, out, cfg, items, now):
     pay = cfg.get("payments", {})
     def paybtn(key, text):
         return f'<a class="btn" href="{E(pay[key])}" rel="noopener">{text}</a>' if pay.get(key) else '<p class="fine">申し込みの受付を準備しています。</p>'
-    w("alerts.html", page(cfg, "", "メール通知", f'''<h1>使っている製品の脆弱性だけを、メールで受け取る</h1>
+    if alerts_on(cfg):
+        w("alerts.html", page(cfg, "", "メール通知", f'''<h1>使っている製品の脆弱性だけを、メールで受け取る</h1>
 <p>製品名を登録しておくと、その製品に新しい脆弱性が出たとき、または掲載済みの件に追記があったときに、1時間以内にメールでお知らせします。</p>
 <ul class="bullets"><li>登録できる製品名は10個まで</li><li>深刻度の下限を選べます（例: 重要以上だけ）</li><li>攻撃での悪用が確認されたときは、深刻度にかかわらず通知</li><li>いつでも解約できます</li></ul>
 <p class="price">{E(pay.get("alert_price", ""))}</p>

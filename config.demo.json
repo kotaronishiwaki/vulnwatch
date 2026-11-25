@@ -42,6 +42,9 @@
     "sponsor_link": "https://example.com/pay/sponsor",
     "donate_link": "https://example.com/pay/donate"
   },
+  "alerts": {
+    "enabled": true
+  },
   "sponsor": {
     "enabled": false,
     "name": "",

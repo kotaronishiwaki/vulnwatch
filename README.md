@@ -49,7 +49,8 @@
 - **広告**: `ads.adsense_client` と各 `slot_*` を入れると一覧と記事下に表示。
 - **紹介リンク**: `affiliate` に、製品名のキーワード（`match`）とリンクを登録。
   一致した記事にだけ「PR」表示つきで出ます。`default: true` は一致が無いときの既定。
-- **有料メール通知**: Stripe の Payment Link を `payments.alert_link` に入れる。
+- **有料メール通知**: 初期状態では非表示です。出すときは `alerts.enabled` を `true` にし、
+  Stripe の Payment Link を `payments.alert_link` に入れる。
   購読者は `SUBSCRIBERS_JSON` に `[{"email":"…","watch":["wordpress"],"min_cvss":7.0}]` の形で登録。
 - **寄付**: `payments.donate_link`。
 - **スポンサー枠**: 初期状態では非表示です。出すときに `sponsor.enabled` を `true` にし、

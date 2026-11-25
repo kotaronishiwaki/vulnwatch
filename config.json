@@ -42,6 +42,9 @@
     "sponsor_link": "",
     "donate_link": ""
   },
+  "alerts": {
+    "enabled": false
+  },
   "sponsor": {
     "enabled": false,
     "name": "",

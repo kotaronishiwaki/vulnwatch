@@ -33,4 +33,5 @@ new = sum(1 for e in events if e["kind"] == "new")
 print(f"[done] 取得 {len(collected)}件 / 新着 {new}件 / 追記 {len(events) - new}件 / 掲載 {n_items}件（基準外で非掲載 {len(stored) - len(items)}件） / 製品ページ {n_prod}")
 if not a.no_notify:
     notify.social(a.data, cfg, items, events)
-    notify.alerts(cfg, items, events)
+    if cfg.get("alerts", {}).get("enabled"):
+        notify.alerts(cfg, items, events)
