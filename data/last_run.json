@@ -1,86 +1,68 @@
 {
- "at": "2026-11-26T19:12:18Z",
+ "at": "2026-11-26T20:14:15Z",
  "events": [
   {
-   "cve": "CVE-2023-6356",
+   "cve": "CVE-2023-6394",
+   "kind": "new",
+   "changes": [],
+   "major": true
+  },
+  {
+   "cve": "CVE-2024-3656",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2023-6476",
+   "cve": "CVE-2026-134470",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2023-6531",
+   "cve": "CVE-2026-134488",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2023-6535",
+   "cve": "CVE-2026-134712",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2023-6536",
+   "cve": "CVE-2026-134713",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2023-6606",
+   "cve": "CVE-2026-134714",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2023-6610",
+   "cve": "CVE-2026-134955",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2024-0562",
+   "cve": "CVE-2026-135037",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2024-0565",
+   "cve": "CVE-2026-135038",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2024-0841",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2024-1132",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2024-1249",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2024-13484",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-107912",
+   "cve": "CVE-2026-135039",
    "kind": "new",
    "changes": [],
    "major": false
