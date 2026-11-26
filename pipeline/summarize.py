@@ -139,10 +139,15 @@ def run(items, cfg, save):
             if not ok:
                 print(f"[info] {it['id']}: 採用済みのAI要約を作り直します（{why}）")
                 it["needs_summary"] = True
+        # APIキーが無い間に定型文で載せた件は、キーが使えるようになったらAI要約を試す。
+        # 一度試して不採用になった件（ai_tried）は、事実が変わるまで繰り返さない。
+        elif use_ai and s and not s.get("ai") and not s.get("ai_tried"):
+            it["needs_summary"] = True
     for it in items.values():
         if not it.get("needs_summary"):
             continue
         out = None
+        tried = False
         if use_ai and done < limit:
             payload = json.dumps(_facts_for_ai(it), ensure_ascii=False)
             try:
@@ -153,6 +158,7 @@ def run(items, cfg, save):
                     out["ai"] = True
                 else:
                     rejected += 1
+                    tried = True
                     print(f"[info] {it['id']}: AI要約を不採用（{why}）")
             except Exception as e:
                 print(f"[warn] {it['id']}: AI呼び出しに失敗（{e}）")
@@ -164,6 +170,8 @@ def run(items, cfg, save):
                 save(it)
                 continue
             out = template_summary(it)
+            if tried:
+                out["ai_tried"] = True
         it["summary"] = out
         it["needs_summary"] = use_ai and not out["ai"] and done >= limit  # 上限超過分は次回に回す
         save(it)

@@ -24,7 +24,7 @@
 
 - 取得、追記、サイト生成、Cloudflareへの公開: 本番で動作確認済み
 - 掲載基準: CVSS 7.0以上、または悪用確認済み（`store.visible()`）
-- AI要約: `ANTHROPIC_API_KEY` が未登録のため定型文。実際のAPI呼び出しは未確認
+- AI要約: 本番で動作中（2026-11-25 15時UTCの実行から）。キー登録前に定型文で載せた件は、1回40件ずつ順に要約し直す
 - SNS投稿（Bluesky / X）、メール通知の実送信: 未設定・未確認
 - AI向けの出力（`llms.txt`、`api/vulns.jsonl`、`api/recent.md`、案内ページ `ai.html`）: 手元の生成で確認済み。公開後の応答ヘッダー（`_headers`）は未確認
 - スポンサー枠: 非表示（`config.json` の `sponsor.enabled`）
@@ -32,7 +32,7 @@
 ## 残っている作業
 
 1. 更新後の実行ログで `掲載 ○件（基準外で非掲載 ○件）` を確認する
-2. Secrets に `ANTHROPIC_API_KEY` を登録し、ログの `[info] AI要約 ○件を処理` と不採用の件数を確認する
+2. 実行ログの `[info] AI要約 ○件を処理` と不採用の件数を確認し、定型文のままの記事が減っていくことを確かめる
 3. メール通知を `alert_test.py` で試す（SMTPの設定が必要）
 4. 決済（Stripe）から購読者一覧への自動反映を作る（現状は `SUBSCRIBERS_JSON` を手で更新）
 5. `tokushoho.html` の文面を記入する（`pipeline/build.py` 内）
