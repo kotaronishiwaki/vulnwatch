@@ -21,6 +21,7 @@
 | `pipeline/aifeed.py` | AIに読ませる出力（`llms.txt`、`api/vulns.jsonl`、`api/recent.md`）。使い方の案内は `ai.html` |
 | `pipeline/notify.py` | Bluesky / X への投稿、購読者へのメール |
 | `static/app.js` | 一覧の絞り込み、サイト全体の検索（`search.json` を読む）、「自分の製品」（登録はブラウザ内に保存） |
+| `functions/feed.js` | 自分専用のRSS（`/feed?watch=製品名,…`）。Cloudflare Pages Functions で動き、`feed-index.txt` を読んで絞り込む |
 | `config.json` | サイト名、掲載基準、広告、紹介リンク、決済リンク |
 | `.github/workflows/update.yml` | 毎時の自動実行と公開 |
 

@@ -90,6 +90,7 @@ def llms_txt(cfg, n_all, n_feed, stamp):
 - [全件（JSON Lines）]({base}/api/vulns.jsonl): 最終更新が直近{DAYS}日の件と、悪用確認済みの全件。いま {n_feed}件。1行が1件のJSON。大きいので全体を読まず、名前で絞り込んで使う
 - [新しい件の一覧（Markdown）]({base}/api/recent.md): 悪用確認済みの件と、更新の新しい{RECENT}件。1件1行。コマンドを実行できないときはこちらを読む
 - [RSS]({base}/feed.xml): 新着と追記（新しい50件）
+- 名前で絞ったRSS: `{base}/feed?watch=名前,名前`（例: `{base}/feed?watch=nginx,postgresql`）。`&min=9` でCVSS 9.0以上、`&only=kev` で悪用確認済みだけに絞れる。利用者が継続して受け取りたいときに案内する
 - 各件のページ: `{base}/v/<CVE番号>`（例: `{base}/v/CVE-2026-0001` の形）。古い件はページを外すことがあり、その場合は404になる
 - 製品別のページとRSS: [製品別の一覧]({base}/products) からたどれる
 

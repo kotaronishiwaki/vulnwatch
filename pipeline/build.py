@@ -492,6 +492,28 @@ def search_index(ordered, cfg):
     return json.dumps(rows, ensure_ascii=False, separators=(",", ":"))
 
 
+def feed_index(ordered, cfg):
+    """自分専用のRSS（functions/feed.js）が照合に使うデータ。新しい順に、1行1件のタブ区切り。
+    項目: CVE番号, 更新日時, スコア, 深刻度の表示, 悪用確認(0/1), 見出し, 要約, 直近の追記, 照合用の文（小文字）
+    RSSに要るのは新しい件だけなので、件数を絞って処理を軽くする。"""
+    n = cfg.get("filters", {}).get("max_feed", 1000)
+
+    def clean(x):
+        return " ".join(str(x).split())  # タブと改行を消す（区切りに使うため）
+    lines = []
+    for it in ordered[:n]:
+        f, s = it["facts"], it["summary"]
+        c = f.get("cvss")
+        last = it["timeline"][-1]
+        update = " ".join(last["changes"]) if last["kind"] == "update" else ""
+        prods = " ".join(f'{p["vendor"]} {p["product"]}' for p in (f.get("products") or [])[:8])
+        hay = " ".join([it["id"], s["title"], prods, s["summary"], (f.get("desc_en") or "")[:300]]).lower()
+        lines.append("\t".join(clean(x) for x in (
+            it["id"], it["updated"], c["score"] if c else "", f'{sev_ja(c["severity"])} {c["score"]}' if c else "",
+            1 if f.get("kev") else 0, s["title"], s["summary"], update, hay)))
+    return "\n".join(lines) + "\n"
+
+
 def hot_list(sub, pre):
     """日別ページの冒頭に出す「要注意」。悪用確認済みか緊急の件を、危ない順に5件まで1行ずつ。"""
     hot = [i for i in sub if i["facts"].get("kev") or sev_class(i) == "critical"][:5]
@@ -698,6 +720,8 @@ def build(root, out, cfg, items, now):
     base = cfg["site_url"].rstrip("/")
     aifeed.write(out, cfg, ordered, now)
     w("search.json", search_index(ordered, cfg))
+    with open(os.path.join(out, "feed-index.txt"), "w", encoding="utf-8", newline="\n") as fh:
+        fh.write(feed_index(ordered, cfg))  # 改行を \n に固定する（functions/feed.js が行の区切りに使う）
     w("search.html", page(cfg, "", "検索", '''<h1>サイト全体から探す</h1>
 <p>製品名、CVE番号、キーワードで、掲載中の記事を探せます。空白で区切ると、すべてを含む記事に絞ります。英語の原文の説明も対象なので、製品名がまだ登録されていない記事も見つかります。</p>
 <input id="sq" class="qbox" type="search" placeholder="例: ffmpeg、wordpress、CVE-2026-12345" aria-label="サイト全体から探す" autofocus>
@@ -710,8 +734,20 @@ def build(root, out, cfg, items, now):
 <form id="wform" class="tools"><input id="winput" class="qbox" type="text" placeholder="例: wordpress、nginx、fortigate" aria-label="登録する製品名" maxlength="60" autocomplete="off"><button type="submit" class="btn">登録</button></form>
 <div id="wlist" class="tags" aria-label="登録した製品（押すと外れます）"></div>
 <p id="winfo" class="fine" role="status"></p>
+<section id="myfeed" class="myfeed" data-base="''' + E(base) + '''" hidden>
+<h2>新着を受け取る（自分専用のRSS）</h2>
+<p>登録した製品だけのRSSです。下のURLを Slack やRSSリーダーに登録すると、新着と追記が届きます。</p>
+<p class="feedopts"><label><input type="radio" name="fmin" value="" checked> すべて（重要以上）</label><label><input type="radio" name="fmin" value="9"> 緊急だけ</label><label><input type="radio" name="fmin" value="kev"> 悪用確認済みだけ</label></p>
+<div class="prompt"><pre id="feedurl"></pre><button type="button" data-copy="feedurl">URLをコピー</button></div>
+<ul class="bullets">
+<li><b>Slack</b>: RSSアプリを追加し、届けたいチャンネルで <code>/feed subscribe （上のURL）</code> と入力します。</li>
+<li><b>メール</b>: Outlook の「RSSフィード」にURLを追加するか、RSSをメールで届けるサービスにURLを登録します。</li>
+<li><b>Teams、Discord、RSSリーダー</b>: RSSを読める連携やアプリに、URLをそのまま登録します。</li>
+</ul>
+<p class="fine">「緊急だけ」を選んでも、悪用が確認された件は深刻度にかかわらず届きます。製品の登録を変えるとURLも変わるので、登録し直してください。</p>
+</section>
 <div class="list" id="results"></div>
-<p class="fine">登録した名前は、このブラウザの中だけに保存されます。サーバーには送られず、ほかの端末とは共有されません。ブラウザのデータを消すと登録も消えます。名前が部分的に一致した記事を出すので、関係のない件が混ざることがあります。</p>
+<p class="fine">登録した名前は、このブラウザの中だけに保存されます。ほかの端末とは共有されず、ブラウザのデータを消すと登録も消えます。RSSを使う場合は、製品名がURLに含まれてサーバーに届きますが、こちらでは保存しません。名前が部分的に一致した記事を出すので、関係のない件が混ざることがあります。</p>
 <noscript><p>この機能にはJavaScriptが必要です。</p></noscript>''',
                       "使っている製品を登録して、関係する脆弱性だけを見る。登録はブラウザ内に保存。", "my.html"))
     w("ai.html", page(cfg, "", "AIで使う", ai_page(base),

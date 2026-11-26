@@ -117,6 +117,16 @@
   var wform = document.getElementById('wform');
   if (wform && res) {
     var winput = document.getElementById('winput'), wlist = document.getElementById('wlist'), winfo = document.getElementById('winfo');
+    // 自分専用のRSSのURL。登録した名前と、選んだ絞り込みから作る
+    var fbox = document.getElementById('myfeed'), furl = document.getElementById('feedurl');
+    var feed = function () {
+      if (!fbox || !furl) return;
+      var ws = getWatch(), opt = fbox.querySelector('input[name="fmin"]:checked'), v = opt ? opt.value : '';
+      fbox.hidden = !ws.length;
+      furl.textContent = fbox.dataset.base + '/feed?watch=' + ws.map(encodeURIComponent).join(',') +
+        (v === 'kev' ? '&only=kev' : v ? '&min=' + v : '');
+    };
+    if (fbox) fbox.querySelectorAll('input[name="fmin"]').forEach(function (o) { o.addEventListener('change', feed); });
     var draw = function () {
       var ws = getWatch();
       wlist.innerHTML = '';
@@ -129,6 +139,7 @@
         b.addEventListener('click', function () { setWatch(getWatch().filter(function (x) { return x !== k; })); draw(); });
         wlist.appendChild(b);
       });
+      feed();
       if (!ws.length) { res.innerHTML = ''; winfo.textContent = 'まだ登録がありません。上の欄に製品名を入れて登録してください。'; return; }
       loadIdx(function (ix) {
         if (!ix) { winfo.textContent = '記事のデータを読み込めませんでした。時間をおいて、もう一度お試しください。'; return; }

@@ -12,6 +12,7 @@
 - 追記の文面は `pipeline/store.py` の差分から機械的に作る。AIに書かせない。
 - 外へ出すURLは `store.public_url()` で作る（`.html` を付けない）。サイト内のリンクは `.html` のまま。
 - 公開は2万ファイルまで。ページを増やす変更をするときは `build.keep_pages()` の上限と実行ログの `公開するファイル ○個` を確認する。
+- `functions/` は Cloudflare Pages Functions（公開時に wrangler がリポジトリ直下から読む）。無料枠は1回の処理時間が短いので、`feed-index.txt` を大きくしない（`filters.max_feed`）。
 - AI要約は `pipeline/summarize.py` の `verify()` で数値照合を通ったものだけ載せる。この照合を弱めない。
 
 ## 手元での確認（ネットワーク不要）

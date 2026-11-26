@@ -222,6 +222,12 @@ button.tag:hover { border-color: var(--critical); color: var(--critical); }
 .watchbtn.on { background: var(--accent); color: var(--accent-ink); }
 #wform .btn { border: 0; font: inherit; font-weight: 700; cursor: pointer; }
 
+/* 「自分の製品」ページの、RSSの案内 */
+.myfeed { display: flex; flex-direction: column; gap: 10px; }
+.myfeed[hidden] { display: none; }
+.feedopts { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .9rem; }
+.feedopts input { margin-right: 4px; }
+
 /* 日別ページ冒頭の「要注意」 */
 .hot { display: flex; flex-direction: column; gap: 8px; }
 .hotlist { margin: 0; padding: 0; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
