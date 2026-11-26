@@ -114,6 +114,7 @@ def llms_txt(cfg, n_all, n_feed, stamp):
        curl -s {base}/api/vulns.jsonl | grep -i -E 'express|django|postgresql|nginx'
 
    `products` が空の件が多いので、`products` だけでなく `description_en` と `title_ja` も照合の対象にする（上の grep は行全体を見るので両方に当たる）。コマンドを実行できないときは recent.md を読んで照合する。
+   取得が 403 で拒否されるときは、プログラムの既定の名乗り（Python の urllib など）が原因のことが多い。curl を使うか、User-Agent を指定して取り直す。
 3. 名前が当たった件ごとに、本当に同じものかを確かめる。短い名前や一般的な語（go、container、server など）は別の製品に当たりやすい。`description_en` と `products` の開発元を読んで判断する。
 4. バージョンを比べる。`description_en` に書かれた影響範囲（例: "before 2.4.1"）と、プロジェクトで実際に入っているバージョンを比べる。原文から判断できないときは「要確認」とし、`sources` のNVDのページと開発元の案内を示す。推測で「影響あり」「影響なし」と断定しない。
 5. 結果を報告する。`exploited` が true の件を最初に、次に `cvss.score` の高い順に並べる。1件ごとに、CVE番号、深刻度、悪用確認の有無、該当すると考えた根拠（どの依存のどのバージョンか）、取るべき対応（修正版への更新など）、このサイトの記事のURLを書く。
