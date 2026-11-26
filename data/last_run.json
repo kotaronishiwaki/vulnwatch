@@ -1,122 +1,322 @@
 {
- "at": "2026-11-26T09:47:44Z",
+ "at": "2026-11-26T10:15:02Z",
  "events": [
   {
-   "cve": "CVE-2026-116089",
+   "cve": "CVE-2025-27769",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-133530",
+   "cve": "CVE-2026-112764",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045352）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112765",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045351）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112766",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045350）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112789",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91395",
+   "cve": "CVE-2026-112790",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045348）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112791",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045347）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112792",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045346）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112793",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045345）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112794",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045344）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112795",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91396",
+   "cve": "CVE-2026-112796",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045342）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112797",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045341）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112798",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045340）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112799",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045339）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112800",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045338）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112965",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91397",
+   "cve": "CVE-2026-112966",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045336）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112967",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045335）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112968",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045334）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112969",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91398",
+   "cve": "CVE-2026-112970",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045332）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112971",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045331）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112972",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045330）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112973",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045329）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112974",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91400",
+   "cve": "CVE-2026-112975",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91410",
+   "cve": "CVE-2026-112976",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045326）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112977",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91411",
+   "cve": "CVE-2026-112978",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045324）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-112979",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91415",
+   "cve": "CVE-2026-112980",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91417",
+   "cve": "CVE-2026-113749",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045321）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-113951",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045320）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-113960",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91418",
+   "cve": "CVE-2026-120268",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91451",
+   "cve": "CVE-2026-120962",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91452",
+   "cve": "CVE-2026-125103",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91453",
+   "cve": "CVE-2026-125104",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91461",
+   "cve": "CVE-2026-125170",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91462",
+   "cve": "CVE-2026-125171",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91463",
+   "cve": "CVE-2026-125180",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91464",
+   "cve": "CVE-2026-125181",
+   "kind": "update",
+   "changes": [
+    "JVNが日本語の情報を公開しました（JVNDB-2026-045314）。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-125182",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-91487",
+   "cve": "CVE-2026-134903",
    "kind": "new",
    "changes": [],
    "major": false
