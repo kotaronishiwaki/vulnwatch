@@ -26,6 +26,7 @@
 - 掲載基準: CVSS 7.0以上、または悪用確認済み（`store.visible()`）
 - AI要約: `ANTHROPIC_API_KEY` が未登録のため定型文。実際のAPI呼び出しは未確認
 - SNS投稿（Bluesky / X）、メール通知の実送信: 未設定・未確認
+- AI向けの出力（`llms.txt`、`api/vulns.jsonl`、`api/recent.md`、案内ページ `ai.html`）: 手元の生成で確認済み。公開後の応答ヘッダー（`_headers`）は未確認
 - スポンサー枠: 非表示（`config.json` の `sponsor.enabled`）
 
 ## 残っている作業

@@ -7,7 +7,7 @@ import shutil
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
-from . import insights, thumb
+from . import aifeed, insights, thumb
 from .store import sev_ja
 
 JST = timezone(timedelta(hours=9))
@@ -180,7 +180,9 @@ def alert_cta(cfg, pre, product=None):
 
 def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_head=""):
     name = cfg["site_name"]
-    full = f"{title} | {name}" if title != name else name
+    # トップは検索結果で内容が伝わるよう、サイト名に見出しを添える
+    full = f"{title} | {name}" if title != name else " | ".join(filter(None, [name, cfg.get("headline")]))
+    og_type = "article" if canonical.startswith("v/") else "website"
     url = cfg["site_url"].rstrip("/") + "/" + canonical
     ads = cfg.get("ads", {}).get("adsense_client")
     adsense = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={E(ads)}" crossorigin="anonymous"></script>' if ads else ""
@@ -199,9 +201,10 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
 <meta name="description" content="{E(desc[:150])}">
 <link rel="canonical" href="{E(url)}">
 <meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc[:150])}">
-<meta property="og:type" content="article"><meta property="og:url" content="{E(url)}"><meta property="og:site_name" content="{E(name)}">
+<meta property="og:type" content="{og_type}"><meta property="og:url" content="{E(url)}"><meta property="og:site_name" content="{E(name)}">
 {ogimg}
 <link rel="alternate" type="application/rss+xml" title="{E(name)}" href="{pre}feed.xml">
+<link rel="alternate" type="text/plain" title="AI向けの案内（llms.txt）" href="{pre}llms.txt">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{pre}static/style.css">
@@ -211,14 +214,14 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
 {demo}
 <header class="top"><div class="wrap">
 <a class="brand" href="{pre}index.html"><span class="pulse" aria-hidden="true"></span>{E(name)}</a>
-<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a><a href="{pre}insights.html">分析</a>{nav_alerts}<a href="{pre}about.html">編集方針</a></nav>
+<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a><a href="{pre}insights.html">分析</a><a href="{pre}ai.html">AIで使う</a>{nav_alerts}<a href="{pre}about.html">編集方針</a></nav>
 </div></header>
 <main class="wrap">
 {body}
 </main>
 <footer class="foot"><div class="wrap">
 <p>{E(cfg.get("tagline", ""))}</p>
-<p><a href="{pre}about.html">編集方針と出典</a><a href="{pre}support.html">{"支援・スポンサー" if cfg.get("sponsor", {}).get("enabled") else "寄付"}</a><a href="{pre}tokushoho.html">特定商取引法に基づく表記</a><a href="{pre}feed.xml">RSS</a></p>
+<p><a href="{pre}about.html">編集方針と出典</a><a href="{pre}support.html">{"支援・スポンサー" if cfg.get("sponsor", {}).get("enabled") else "寄付"}</a><a href="{pre}tokushoho.html">特定商取引法に基づく表記</a><a href="{pre}feed.xml">RSS</a><a href="{pre}llms.txt">llms.txt</a></p>
 <p class="fine">要約は公開情報をもとに自動生成しています。対応の判断は必ず出典の原文で確認してください。</p>
 </div></footer>
 <script src="{pre}static/app.js" defer></script>
@@ -415,6 +418,47 @@ def slides(cfg, out, ordered):
 </section>'''
 
 
+def ai_page(base):
+    """「AIで使う」ページ。利用者がAIに渡す依頼文と、データの場所を案内する。"""
+    ask = (f"{base}/llms.txt を読み、そこに書かれた手順に従って、このプロジェクトに関係する脆弱性があるか調べてください。"
+           "依存関係のファイル、Dockerfile、使っているミドルウェアを対象にします。"
+           "該当しそうな件は、CVE番号、深刻度、悪用確認の有無、該当すると考えた根拠、取るべき対応を表にまとめてください。"
+           "判断できない件は「要確認」としてください。")
+    rule = (f"依存関係を追加・更新するときは、{base}/llms.txt の手順で、"
+            "その製品やライブラリに悪用確認済みまたは深刻度の高い脆弱性が出ていないか確認する。")
+    chat = (f"{base}/api/recent.md を読んで、次の製品やライブラリに関係する脆弱性があれば教えてください。"
+            "該当する件は、CVE番号、深刻度、取るべき対応をまとめてください。\n\n（ここに、使っている製品名とバージョンを書く）")
+
+    def box(i, text, label):
+        return (f'<div class="prompt"><pre id="ask{i}">{E(text)}</pre>'
+                f'<button type="button" data-copy="ask{i}">{label}</button></div>')
+    return f'''<h1>AIに読ませて、自分のプロジェクトを調べる</h1>
+<p>このサイトのデータは、AIが読みやすい形でも公開しています。AIコーディングの道具に依頼文を渡すと、プロジェクトの依存関係や構成と照らし合わせて、関係のありそうな脆弱性を挙げてくれます。無料で、登録は要りません。</p>
+<h2>1. プロジェクトを調べさせる</h2>
+<p>Claude Code、Cursor、Codex、GitHub Copilot など、プロジェクトのファイルを読めるAIに、次の文をそのまま渡します。</p>
+{box(1, ask, "依頼文をコピー")}
+<h2>2. 依存関係を変えるたびに確認させる</h2>
+<p>プロジェクトの指示ファイル（CLAUDE.md、AGENTS.md、.cursor/rules など）に次の1行を足しておくと、依存関係を触るときにAIが自分から確認します。</p>
+{box(2, rule, "この1行をコピー")}
+<h2>3. チャットのAIで調べる</h2>
+<p>ChatGPT や Claude など、Webを読めるチャットでは、製品名を自分で書いて渡します。</p>
+{box(3, chat, "依頼文をコピー")}
+<h2>公開しているデータ</h2>
+<ul class="bullets">
+<li><a href="llms.txt">llms.txt</a> … AI向けの案内。データの場所、照合の手順、結果の扱い方</li>
+<li><a href="api/vulns.jsonl">api/vulns.jsonl</a> … 直近{aifeed.DAYS}日に更新された件と悪用確認済みの件を、1行1件のJSONで</li>
+<li><a href="api/recent.md">api/recent.md</a> … 悪用確認済みの件と新しい{aifeed.RECENT}件の、1件1行の一覧</li>
+<li><a href="feed.xml">RSS</a> … 新着と追記。製品ごとのRSSは<a href="products.html">製品別の一覧</a>から</li>
+</ul>
+<p>データは1時間ごとに更新します。登録なしで、個人・業務を問わず読み込んで使えます。</p>
+<h2>知っておいてほしいこと</h2>
+<ul class="bullets">
+<li>載っているのは、深刻度が高い件（CVSS 7.0以上）と、実際に悪用が確認された件だけです。「該当なし」は「安全」を意味しません。</li>
+<li>ライブラリの検査は、npm audit、pip-audit、osv-scanner、Dependabot などの専用の道具と併用してください。このサイトが役立つのは、それらが見ないOS、ミドルウェア、ネットワーク機器、業務ソフトと、いま悪用されている件の把握です。</li>
+<li>AIの判定は誤ることがあります。対応を決める前に、各記事の出典（NVD、開発元の案内）で影響するバージョンを確認してください。</li>
+</ul>'''
+
+
 def build(root, out, cfg, items, now):
     here = os.path.dirname(os.path.abspath(__file__))
     if os.path.exists(out):
@@ -444,6 +488,10 @@ def build(root, out, cfg, items, now):
     kev24 = sum(1 for i in ordered if i["updated"] >= day and i["facts"].get("kev"))
     months = sorted({jst(i["first_seen"], "%Y-%m") for i in ordered}, reverse=True)
     mlinks = "".join(f'<a class="tag" href="m/{m}.html">{m}</a>' for m in months[:12])
+    site_ld = '<script type="application/ld+json">' + json.dumps({
+        "@context": "https://schema.org", "@type": "WebSite", "name": cfg["site_name"],
+        "url": cfg["site_url"].rstrip("/") + "/", "inLanguage": "ja",
+        "description": cfg.get("tagline", "")}, ensure_ascii=False) + "</script>"
     head = f'''<section class="hero">
 <h1>{E(cfg.get("headline", cfg["site_name"]))}</h1>
 <p>{E(cfg.get("tagline", ""))}</p>
@@ -451,11 +499,14 @@ def build(root, out, cfg, items, now):
 <p class="fine">数字は直近24時間。最終確認 <time datetime="{stamp}">{jst(stamp)}</time>（1時間ごとに自動更新）</p>
 </section>
 {slides(cfg, out, ordered)}
+<aside class="cta"><h3>自分のプロジェクトに関係する脆弱性を、AIに調べさせる</h3>
+<p>Claude Code や Cursor などに依頼文を1つ渡すと、このサイトのデータと依存関係を照らし合わせます。無料、登録不要。</p>
+<a class="btn" href="ai.html">使い方を見る</a></aside>
 {sponsor(cfg, "")}'''
     w("index.html", page(cfg, "", cfg["site_name"],
                          head + list_block(ordered[:100], "", cfg) + alert_cta(cfg, "") +
                          f'<section><h2>月別の一覧</h2><div class="tags">{mlinks}</div></section>',
-                         cfg.get("tagline", ""), ""))
+                         cfg.get("tagline", ""), "", jsonld=site_ld))
 
     # 月別
     for m in months:
@@ -525,8 +576,17 @@ def build(root, out, cfg, items, now):
 
     w("feed.xml", rss(cfg, ordered, cfg["site_name"], "feed.xml"))
     base = cfg["site_url"].rstrip("/")
-    urls = [f"{base}/", f"{base}/insights.html"] + [f'{base}/v/{i["id"]}.html' for i in ordered] + [f"{base}/p/{s}.html" for s in prod]
+    aifeed.write(out, cfg, ordered, now)
+    w("ai.html", page(cfg, "", "AIで使う", ai_page(base),
+                      "このサイトをAIに読ませて、自分のプロジェクトに関係する脆弱性を調べる方法。Claude Code や Cursor に渡す依頼文つき。", "ai.html"))
+
+    # サイトマップ。更新日時を付けて、検索エンジンが変わったページから見に来られるようにする
+    urls = [(f"{base}/", stamp), (f"{base}/products.html", stamp), (f"{base}/insights.html", stamp),
+            (f"{base}/ai.html", ""), (f"{base}/about.html", "")]
+    urls += [(f'{base}/v/{i["id"]}.html', i["updated"]) for i in ordered]
+    urls += [(f"{base}/p/{sl}.html", max(i["updated"] for i in v["items"])) for sl, v in prod.items()]
+    urls += [(f"{base}/m/{m}.html", "") for m in months]
     w("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
-      "".join(f"<url><loc>{E(u)}</loc></url>" for u in urls) + "</urlset>")
+      "".join(f"<url><loc>{E(u)}</loc>" + (f"<lastmod>{m}</lastmod>" if m else "") + "</url>" for u, m in urls) + "</urlset>")
     w("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
     return len(ordered), len(prod)

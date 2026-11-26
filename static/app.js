@@ -62,4 +62,14 @@
     try { navigator.clipboard.writeText(copy.dataset.url).then(function () { done('コピーしました'); }, function () { done('コピーできませんでした'); }); }
     catch (e) { done('コピーできませんでした'); }
   });
+  // 「AIで使う」ページの依頼文をコピーするボタン（data-copy に、写す要素の id）
+  document.querySelectorAll('button[data-copy]').forEach(function (b) {
+    var label = b.textContent;
+    b.addEventListener('click', function () {
+      var src = document.getElementById(b.dataset.copy);
+      var done = function (t) { b.textContent = t; setTimeout(function () { b.textContent = label; }, 1800); };
+      try { navigator.clipboard.writeText(src.textContent).then(function () { done('コピーしました'); }, function () { done('コピーできませんでした'); }); }
+      catch (e) { done('コピーできませんでした'); }
+    });
+  });
 })();

@@ -207,6 +207,11 @@ details p { margin-top: 8px; color: var(--muted); }
 .foot .wrap { display: flex; flex-direction: column; gap: 8px; }
 .foot a { margin-right: 16px; }
 
+/* 「AIで使う」ページの、コピーして使う依頼文 */
+.prompt { background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--accent); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; max-width: 46em; }
+.prompt pre { margin: 0; font: inherit; font-size: .95rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.prompt button { font: inherit; font-size: .85rem; font-weight: 700; padding: 6px 14px; border: 0; border-radius: 6px; background: var(--accent); color: var(--accent-ink); cursor: pointer; }
+
 @media (min-width: 720px) {
   .points { grid-template-columns: repeat(3, 1fr); }
 }
