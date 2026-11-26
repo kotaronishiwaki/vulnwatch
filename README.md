@@ -17,7 +17,7 @@
 | `pipeline/sources.py` | 取得と正規化 |
 | `pipeline/store.py` | 保存、同一件の統合、更新履歴の追記文の生成 |
 | `pipeline/summarize.py` | AI要約と事実照合、定型文への切り替え |
-| `pipeline/build.py` | サイト生成（記事、製品別、月別、RSS、サイトマップ、共有画像） |
+| `pipeline/build.py` | サイト生成（記事、製品別、日別、月別、RSS、サイトマップ、共有画像） |
 | `pipeline/aifeed.py` | AIに読ませる出力（`llms.txt`、`api/vulns.jsonl`、`api/recent.md`）。使い方の案内は `ai.html` |
 | `pipeline/notify.py` | Bluesky / X への投稿、購読者へのメール |
 | `config.json` | サイト名、掲載基準、広告、紹介リンク、決済リンク |

@@ -308,7 +308,7 @@ def item_page(cfg, it):
     jsonld = '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + "</script>"
     n_upd = sum(1 for t in it["timeline"] if t["kind"] == "update")
     body = f'''<article class="detail s-{sev_class(it)}">
-<p class="crumbs"><a href="{pre}index.html">新着</a> / <span class="id">{it["id"]}</span></p>
+<p class="crumbs"><a href="{pre}index.html">新着</a> / <a href="{pre}d/{jst(it["first_seen"], "%Y-%m-%d")}.html">{day_ja(jst(it["first_seen"], "%Y-%m-%d"))}</a> / <span class="id">{it["id"]}</span></p>
 <h1>{E(s["title"])}</h1>
 <div class="chips">{chips(it)}</div>
 <p class="times">掲載 <time datetime="{it["first_seen"]}">{jst(it["first_seen"])}</time>{f' ・ 最終追記 <time datetime="{it["updated"]}">{jst(it["updated"])}</time>' if n_upd else ''}</p>
@@ -463,6 +463,18 @@ def ai_page(base):
 </ul>'''
 
 
+def day_ja(d):
+    """2026-11-26 → 2026年11月26日"""
+    y, m, dd = d.split("-")
+    return f"{y}年{int(m)}月{int(dd)}日"
+
+
+def day_counts(sub):
+    """その日の (掲載件数, 緊急の件数, 悪用確認の件数)。"""
+    return (len(sub), sum(1 for i in sub if sev_class(i) == "critical"),
+            sum(1 for i in sub if i["facts"].get("kev")))
+
+
 def keep_pages(ordered, cfg):
     """ページを作る件を選ぶ。返り値: (作る件, 外した件数)
 
@@ -490,7 +502,7 @@ def build(root, out, cfg, items, now):
     here = os.path.dirname(os.path.abspath(__file__))
     if os.path.exists(out):
         shutil.rmtree(out)
-    for d in ("v", "p", "m", "og", "hero", "static"):
+    for d in ("v", "p", "m", "d", "og", "hero", "static"):
         os.makedirs(os.path.join(out, d))
     for fn in ("style.css", "app.js"):
         shutil.copy(os.path.join(here, "..", "static", fn), os.path.join(out, "static", fn))
@@ -523,8 +535,14 @@ def build(root, out, cfg, items, now):
     new24 = sum(1 for i in ordered if i["first_seen"] >= day)
     upd24 = sum(1 for i in ordered if i["updated"] >= day and len(i["timeline"]) > 1)
     kev24 = sum(1 for i in ordered if i["updated"] >= day and i["facts"].get("kev"))
-    months = sorted({jst(i["first_seen"], "%Y-%m") for i in ordered}, reverse=True)
-    mlinks = "".join(f'<a class="tag" href="m/{m}.html">{m}</a>' for m in months[:12])
+    # 掲載日（日本時間）ごとの件。日別ページと、月別の表のもとになる
+    days = {}
+    for i in ordered:
+        days.setdefault(jst(i["first_seen"], "%Y-%m-%d"), []).append(i)
+    dkeys = sorted(days, reverse=True)
+    months = sorted({d[:7] for d in dkeys}, reverse=True)
+    dlinks = "".join(f'<a class="tag" href="d/{d}.html">{int(d[5:7])}月{int(d[8:])}日 <b>{len(days[d])}</b></a>' for d in dkeys[:14])
+    mlinks = "".join(f'<a class="tag" href="m/{m}.html">{m[:4]}年{int(m[5:])}月</a>' for m in months[:12])
     site_ld = '<script type="application/ld+json">' + json.dumps({
         "@context": "https://schema.org", "@type": "WebSite", "name": cfg["site_name"],
         "url": cfg["site_url"].rstrip("/") + "/", "inLanguage": "ja",
@@ -542,15 +560,37 @@ def build(root, out, cfg, items, now):
 {sponsor(cfg, "")}'''
     w("index.html", page(cfg, "", cfg["site_name"],
                          head + list_block(ordered[:100], "", cfg) + alert_cta(cfg, "") +
+                         f'<section><h2>日別の一覧</h2><div class="tags">{dlinks}</div></section>'
                          f'<section><h2>月別の一覧</h2><div class="tags">{mlinks}</div></section>',
                          cfg.get("tagline", ""), "", jsonld=site_ld))
 
-    # 月別
+    # 日別（その日に掲載した件の一覧。トップから外れた記事への入口にもなる）
+    for n, d in enumerate(dkeys):
+        total, crit, kev = day_counts(days[d])
+        m = d[:7]
+        newer = f'<a href="{dkeys[n - 1]}.html">← {day_ja(dkeys[n - 1])}</a>' if n > 0 else ""
+        older = f'<a href="{dkeys[n + 1]}.html">{day_ja(dkeys[n + 1])} →</a>' if n + 1 < len(dkeys) else ""
+        body = f'''<p class="crumbs"><a href="../index.html">新着</a> / <a href="../m/{m}.html">{m[:4]}年{int(m[5:])}月</a> / {day_ja(d)}</p>
+<h1>{day_ja(d)}に掲載した脆弱性</h1>
+<p>この日に掲載した {total}件（うち緊急 {crit}件、悪用確認 {kev}件）を、更新の新しい順に載せています。日付は日本時間です。</p>
+<p class="daynav">{newer}{older}</p>''' + list_block(days[d], "../", cfg)
+        w(f"d/{d}.html", page(cfg, "../", f"{day_ja(d)}の脆弱性", body,
+                              f"{day_ja(d)}に掲載した脆弱性 {total}件の一覧。緊急 {crit}件、悪用確認 {kev}件。", f"d/{d}.html"))
+
+    # 月別（日ごとの件数の表。記事そのものは日別ページに並べる）
     for m in months:
-        sub = [i for i in ordered if jst(i["first_seen"], "%Y-%m") == m]
-        w(f"m/{m}.html", page(cfg, "../", f"{m} の脆弱性",
-                              f"<h1>{m} に掲載した脆弱性</h1>" + list_block(sub, "../", cfg),
-                              f"{m} に掲載した脆弱性の一覧。", f"m/{m}.html"))
+        rows, tot = [], [0, 0, 0]
+        for d in (x for x in dkeys if x[:7] == m):
+            c = day_counts(days[d])
+            tot = [a + b for a, b in zip(tot, c)]
+            rows.append(f'<tr><th><a href="../d/{d}.html">{day_ja(d)}</a></th><td>{c[0]}</td><td>{c[1]}</td><td>{c[2]}</td></tr>')
+        title = f"{m[:4]}年{int(m[5:])}月"
+        body = f'''<p class="crumbs"><a href="../index.html">新着</a> / {title}</p>
+<h1>{title}に掲載した脆弱性</h1>
+<p>日付を選ぶと、その日に掲載した件の一覧を開きます。この月の掲載は {tot[0]}件（うち緊急 {tot[1]}件、悪用確認 {tot[2]}件）です。</p>
+<div class="scroll"><table class="days"><tr><th>掲載日</th><td>掲載</td><td>緊急</td><td>悪用確認</td></tr>{"".join(rows)}</table></div>'''
+        w(f"m/{m}.html", page(cfg, "../", f"{title}の脆弱性", body,
+                              f"{title}に掲載した脆弱性 {tot[0]}件を、日ごとの件数でまとめた一覧。", f"m/{m}.html"))
 
     # 製品別（検索からの入口になるページ。製品ごとのRSSも出す）
     for sl, v in prod.items():
@@ -618,6 +658,7 @@ def build(root, out, cfg, items, now):
             (f"{base}/ai", ""), (f"{base}/about", "")]
     urls += [(f'{base}/v/{i["id"]}', i["updated"]) for i in ordered]
     urls += [(f"{base}/p/{sl}", max(i["updated"] for i in v["items"])) for sl, v in prod.items()]
+    urls += [(f"{base}/d/{d}", max(i["updated"] for i in days[d])) for d in dkeys]
     urls += [(f"{base}/m/{m}", "") for m in months]
     w("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
       "".join(f"<url><loc>{E(u)}</loc>" + (f"<lastmod>{m}</lastmod>" if m else "") + "</url>" for u, m in urls) + "</urlset>")

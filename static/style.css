@@ -207,6 +207,11 @@ details p { margin-top: 8px; color: var(--muted); }
 .foot .wrap { display: flex; flex-direction: column; gap: 8px; }
 .foot a { margin-right: 16px; }
 
+/* 日別ページの前後の日へのリンクと、月別ページの件数の表 */
+.daynav { display: flex; justify-content: space-between; gap: 16px; font-size: .9rem; }
+.days td { font-variant-numeric: tabular-nums; }
+.tag b { font-weight: 500; color: var(--muted); margin-left: 4px; }
+
 /* 「AIで使う」ページの、コピーして使う依頼文 */
 .prompt { background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--accent); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; max-width: 46em; }
 .prompt pre { margin: 0; font: inherit; font-size: .95rem; white-space: pre-wrap; overflow-wrap: anywhere; }
