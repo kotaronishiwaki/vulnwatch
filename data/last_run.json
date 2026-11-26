@@ -1,68 +1,100 @@
 {
- "at": "2026-11-26T20:14:15Z",
+ "at": "2026-11-26T21:13:30Z",
  "events": [
   {
-   "cve": "CVE-2023-6394",
+   "cve": "CVE-2023-4320",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-107912",
+   "kind": "update",
+   "changes": [
+    "参考情報が 2 件追加されました。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-117691",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2024-3656",
+   "cve": "CVE-2026-120984",
+   "kind": "new",
+   "changes": [],
+   "major": true
+  },
+  {
+   "cve": "CVE-2026-134489",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-134470",
+   "cve": "CVE-2026-134705",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-134488",
+   "cve": "CVE-2026-134720",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-134712",
+   "cve": "CVE-2026-134991",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-134713",
+   "cve": "CVE-2026-134997",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-134714",
+   "cve": "CVE-2026-137506",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-134955",
+   "cve": "CVE-2026-137507",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-135037",
+   "cve": "CVE-2026-137518",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-135038",
+   "cve": "CVE-2026-137529",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-135039",
+   "cve": "CVE-2026-137539",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137588",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-137657",
    "kind": "new",
    "changes": [],
    "major": false
