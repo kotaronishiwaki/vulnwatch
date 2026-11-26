@@ -214,7 +214,7 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
 {demo}
 <header class="top"><div class="wrap">
 <a class="brand" href="{pre}index.html"><span class="pulse" aria-hidden="true"></span>{E(name)}</a>
-<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a><a href="{pre}insights.html">分析</a><a href="{pre}ai.html">AIで使う</a>{nav_alerts}<a href="{pre}about.html">編集方針</a></nav>
+<nav><a href="{pre}index.html">新着</a><a href="{pre}products.html">製品別</a><a href="{pre}my.html">自分の製品</a><a href="{pre}search.html">検索</a><a href="{pre}insights.html">分析</a><a href="{pre}ai.html">AIで使う</a>{nav_alerts}<a href="{pre}about.html">編集方針</a></nav>
 </div></header>
 <main class="wrap">
 {body}
@@ -230,21 +230,23 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
 
 
 def list_block(items, pre, cfg, with_filters=True):
-    filt = '''<div class="tools">
+    filt = f'''<div class="tools">
 <div class="filters" role="group" aria-label="絞り込み">
 <button type="button" class="on" data-f="">すべて</button>
 <button type="button" data-f="critical">緊急</button>
 <button type="button" data-f="kev">悪用確認</button>
 <button type="button" data-f="upd">追記あり</button>
+<button type="button" data-f="my" hidden>自分の製品</button>
 </div>
-<input id="q" type="search" placeholder="製品名やCVE番号で絞り込む" aria-label="製品名やCVE番号で絞り込む">
+<input id="q" class="qbox" type="search" placeholder="この一覧を製品名やCVE番号で絞り込む" aria-label="この一覧を製品名やCVE番号で絞り込む">
+<a id="qall" class="qall" href="{pre}search.html">サイト全体から探す</a>
 </div>''' if with_filters else ""
     cards = []
     for i, it in enumerate(items):
         cards.append(card(it, pre))
         if i == 3:
             cards.append(ad(cfg, "slot_list"))
-    empty = '<p id="empty" hidden>条件に合う記事がありません。絞り込みを解除してください。</p>'
+    empty = f'<p id="empty" hidden>この一覧には、条件に合う記事がありません。絞り込みを解除するか、<a href="{pre}search.html">サイト全体から探して</a>ください。</p>'
     return f'{filt}<div class="list" id="list">{"".join(cards)}</div>{empty}'
 
 
@@ -463,6 +465,47 @@ def ai_page(base):
 </ul>'''
 
 
+def danger_key(it):
+    """危ない順に並べるためのキー。悪用確認済み、深刻度、悪用される確率の順に見る。
+    並べ替えは順序を保つので、同じ危なさの件は元の並び（更新の新しい順）のままになる。"""
+    f = it["facts"]
+    return (0 if f.get("kev") else 1, -((f.get("cvss") or {}).get("score") or 0),
+            -((f.get("epss") or {}).get("score") or 0))
+
+
+def search_index(ordered, cfg):
+    """ブラウザでの検索と「自分の製品」に使う索引。1件を短い配列にして、新しい件から上限まで入れる。
+    並びは [CVE番号, 見出し, 製品名, 要約, 原文の冒頭, スコア, 深刻度, 悪用確認, 更新日時]。"""
+    n = cfg.get("filters", {}).get("max_search", 6000)
+    first = sorted(ordered, key=lambda i: 0 if i["facts"].get("kev") else 1)[:n]  # 悪用確認済みは必ず入れる
+    keep = {i["id"] for i in first}
+    rows = []
+    for it in ordered:
+        if it["id"] not in keep:
+            continue
+        f, s = it["facts"], it["summary"]
+        c = f.get("cvss")
+        prods = "、".join(f'{p["vendor"]} {p["product"]}' for p in (f.get("products") or [])[:4])
+        desc = " ".join((f.get("desc_en") or "").split())[:240]
+        rows.append([it["id"], s["title"], prods, s["summary"], desc, c["score"] if c else None,
+                     sev_class(it), 1 if f.get("kev") else 0, it["updated"]])
+    return json.dumps(rows, ensure_ascii=False, separators=(",", ":"))
+
+
+def hot_list(sub, pre):
+    """日別ページの冒頭に出す「要注意」。悪用確認済みか緊急の件を、危ない順に5件まで1行ずつ。"""
+    hot = [i for i in sub if i["facts"].get("kev") or sev_class(i) == "critical"][:5]
+    if not hot:
+        return ""
+    rows = []
+    for it in hot:
+        ps = it["facts"].get("products") or []
+        prod = f'<span class="hp">{E(ps[0]["vendor"])} {E(ps[0]["product"])}</span>' if ps else ""
+        rows.append(f'<li class="s-{sev_class(it)}"><a href="{pre}v/{it["id"]}.html">{E(it["summary"]["title"])}</a>'
+                    f'{prod}<span class="chips">{chips(it)}</span></li>')
+    return f'<section class="hot"><h2>この日の要注意</h2><ol class="hotlist">{"".join(rows)}</ol></section>'
+
+
 def day_ja(d):
     """2026-11-26 → 2026年11月26日"""
     y, m, dd = d.split("-")
@@ -557,6 +600,7 @@ def build(root, out, cfg, items, now):
 <aside class="cta"><h3>自分のプロジェクトに関係する脆弱性を、AIに調べさせる</h3>
 <p>Claude Code や Cursor などに依頼文を1つ渡すと、このサイトのデータと依存関係を照らし合わせます。無料、登録不要。</p>
 <a class="btn" href="ai.html">使い方を見る</a></aside>
+<p class="mybar" id="mybar"><a href="my.html">使っている製品を登録</a>すると、関係する件だけをまとめて見られます（登録不要、このブラウザに保存）。</p>
 {sponsor(cfg, "")}'''
     w("index.html", page(cfg, "", cfg["site_name"],
                          head + list_block(ordered[:100], "", cfg) + alert_cta(cfg, "") +
@@ -566,14 +610,16 @@ def build(root, out, cfg, items, now):
 
     # 日別（その日に掲載した件の一覧。トップから外れた記事への入口にもなる）
     for n, d in enumerate(dkeys):
+        days[d].sort(key=danger_key)
         total, crit, kev = day_counts(days[d])
         m = d[:7]
         newer = f'<a href="{dkeys[n - 1]}.html">← {day_ja(dkeys[n - 1])}</a>' if n > 0 else ""
         older = f'<a href="{dkeys[n + 1]}.html">{day_ja(dkeys[n + 1])} →</a>' if n + 1 < len(dkeys) else ""
         body = f'''<p class="crumbs"><a href="../index.html">新着</a> / <a href="../m/{m}.html">{m[:4]}年{int(m[5:])}月</a> / {day_ja(d)}</p>
 <h1>{day_ja(d)}に掲載した脆弱性</h1>
-<p>この日に掲載した {total}件（うち緊急 {crit}件、悪用確認 {kev}件）を、更新の新しい順に載せています。日付は日本時間です。</p>
-<p class="daynav">{newer}{older}</p>''' + list_block(days[d], "../", cfg)
+<p>この日に掲載した {total}件（うち緊急 {crit}件、悪用確認 {kev}件）を、危ない順（悪用確認済み、深刻度の高い順）に載せています。日付は日本時間です。</p>
+<p class="daynav">{newer}{older}</p>
+{hot_list(days[d], "../")}''' + list_block(days[d], "../", cfg)
         w(f"d/{d}.html", page(cfg, "../", f"{day_ja(d)}の脆弱性", body,
                               f"{day_ja(d)}に掲載した脆弱性 {total}件の一覧。緊急 {crit}件、悪用確認 {kev}件。", f"d/{d}.html"))
 
@@ -598,6 +644,7 @@ def build(root, out, cfg, items, now):
         body = f'''<p class="crumbs"><a href="../products.html">製品別</a> / {E(name)}</p>
 <h1>{E(name)} の脆弱性</h1>
 <p>{E(v["p"]["vendor"])} {E(name)} に関する脆弱性の新着と追記を、新しい順に載せています。<a href="{sl}.xml">この製品だけのRSS</a></p>
+<p><button type="button" class="watchbtn" data-watch="{E(name.lower())}" hidden>「自分の製品」に登録する</button></p>
 {alert_cta(cfg, "../", name)}''' + list_block(v["items"], "../", cfg, False)
         w(f"p/{sl}.html", page(cfg, "../", f"{name} の脆弱性", body,
                                f"{name} の脆弱性情報の新着と追記。", f"p/{sl}.html"))
@@ -650,12 +697,29 @@ def build(root, out, cfg, items, now):
     w("feed.xml", rss(cfg, ordered, cfg["site_name"], "feed.xml"))
     base = cfg["site_url"].rstrip("/")
     aifeed.write(out, cfg, ordered, now)
+    w("search.json", search_index(ordered, cfg))
+    w("search.html", page(cfg, "", "検索", '''<h1>サイト全体から探す</h1>
+<p>製品名、CVE番号、キーワードで、掲載中の記事を探せます。空白で区切ると、すべてを含む記事に絞ります。英語の原文の説明も対象なので、製品名がまだ登録されていない記事も見つかります。</p>
+<input id="sq" class="qbox" type="search" placeholder="例: ffmpeg、wordpress、CVE-2026-12345" aria-label="サイト全体から探す" autofocus>
+<p id="sinfo" class="fine" role="status"></p>
+<div class="list" id="results"></div>
+<noscript><p>検索にはJavaScriptが必要です。<a href="products.html">製品別の一覧</a>からも探せます。</p></noscript>''',
+                          "掲載中の脆弱性を、製品名、CVE番号、キーワードで検索。", "search.html"))
+    w("my.html", page(cfg, "", "自分の製品", '''<h1>自分の製品</h1>
+<p>使っている製品やライブラリの名前を登録すると、関係しそうな記事だけをここに並べます。各一覧の「自分の製品」ボタンでも絞り込めます。</p>
+<form id="wform" class="tools"><input id="winput" class="qbox" type="text" placeholder="例: wordpress、nginx、fortigate" aria-label="登録する製品名" maxlength="60" autocomplete="off"><button type="submit" class="btn">登録</button></form>
+<div id="wlist" class="tags" aria-label="登録した製品（押すと外れます）"></div>
+<p id="winfo" class="fine" role="status"></p>
+<div class="list" id="results"></div>
+<p class="fine">登録した名前は、このブラウザの中だけに保存されます。サーバーには送られず、ほかの端末とは共有されません。ブラウザのデータを消すと登録も消えます。名前が部分的に一致した記事を出すので、関係のない件が混ざることがあります。</p>
+<noscript><p>この機能にはJavaScriptが必要です。</p></noscript>''',
+                      "使っている製品を登録して、関係する脆弱性だけを見る。登録はブラウザ内に保存。", "my.html"))
     w("ai.html", page(cfg, "", "AIで使う", ai_page(base),
                       "このサイトをAIに読ませて、自分のプロジェクトに関係する脆弱性を調べる方法。Claude Code や Cursor に渡す依頼文つき。", "ai.html"))
 
     # サイトマップ。更新日時を付けて、検索エンジンが変わったページから見に来られるようにする
     urls = [(f"{base}/", stamp), (f"{base}/products", stamp), (f"{base}/insights", stamp),
-            (f"{base}/ai", ""), (f"{base}/about", "")]
+            (f"{base}/ai", ""), (f"{base}/search", ""), (f"{base}/about", "")]
     urls += [(f'{base}/v/{i["id"]}', i["updated"]) for i in ordered]
     urls += [(f"{base}/p/{sl}", max(i["updated"] for i in v["items"])) for sl, v in prod.items()]
     urls += [(f"{base}/d/{d}", max(i["updated"] for i in days[d])) for d in dkeys]

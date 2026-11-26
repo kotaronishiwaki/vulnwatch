@@ -85,7 +85,7 @@ main > p { max-width: 42em; }
 .filters { display: flex; flex-wrap: wrap; gap: 6px; }
 .filters button { font: inherit; font-size: .88rem; padding: 6px 14px; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
 .filters button.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
-#q { flex: 1 1 220px; min-width: 0; font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); }
+#q, .qbox { flex: 1 1 220px; min-width: 0; font: inherit; padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); }
 
 /* 一覧 */
 .list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 14px; }
@@ -211,6 +211,25 @@ details p { margin-top: 8px; color: var(--muted); }
 .daynav { display: flex; justify-content: space-between; gap: 16px; font-size: .9rem; }
 .days td { font-variant-numeric: tabular-nums; }
 .tag b { font-weight: 500; color: var(--muted); margin-left: 4px; }
+
+/* 検索と「自分の製品」 */
+.qall { font-size: .88rem; white-space: nowrap; }
+main > .qbox { flex: none; width: 100%; max-width: 46em; }
+.mybar { font-size: .9rem; color: var(--muted); }
+button.tag, .watchbtn { font: inherit; font-size: .88rem; color: var(--ink); cursor: pointer; }
+button.tag:hover { border-color: var(--critical); color: var(--critical); }
+.watchbtn { padding: 6px 14px; border: 1px solid var(--accent); border-radius: 6px; background: var(--surface); color: var(--accent); }
+.watchbtn.on { background: var(--accent); color: var(--accent-ink); }
+#wform .btn { border: 0; font: inherit; font-weight: 700; cursor: pointer; }
+
+/* 日別ページ冒頭の「要注意」 */
+.hot { display: flex; flex-direction: column; gap: 8px; }
+.hotlist { margin: 0; padding: 0; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.hotlist li { --sev: var(--none); display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; padding: 10px 14px; border-left: 6px solid var(--sev); border-bottom: 1px solid var(--line); }
+.hotlist li:last-child { border-bottom: 0; }
+.hotlist a { font-weight: 700; color: var(--ink); text-decoration: none; overflow-wrap: anywhere; }
+.hotlist a:hover { color: var(--accent); }
+.hotlist .hp { font-size: .85rem; color: var(--muted); }
 
 /* 「AIで使う」ページの、コピーして使う依頼文 */
 .prompt { background: var(--surface); border: 1px solid var(--line); border-left: 6px solid var(--accent); border-radius: 6px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; max-width: 46em; }
