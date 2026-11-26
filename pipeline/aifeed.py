@@ -11,7 +11,7 @@ import json
 import os
 from datetime import timedelta
 
-from .store import sev_ja
+from .store import public_url, sev_ja
 
 DAYS = 30        # vulns.jsonl に入れる期間（最終更新から）。悪用確認済みの件は期間を問わず入れる
 MAX_FEED = 5000  # vulns.jsonl の上限件数（ファイルが大きくなりすぎないように）
@@ -25,7 +25,7 @@ def record(cfg, it):
     base = cfg["site_url"].rstrip("/")
     return {
         "id": it["id"],
-        "url": f'{base}/v/{it["id"]}.html',
+        "url": public_url(cfg, f'v/{it["id"]}.html'),
         "title_ja": s["title"],
         "summary_ja": s["summary"],
         "description_en": f.get("desc_en") or "",
@@ -67,7 +67,7 @@ def recent_md(cfg, ordered, stamp):
            "",
            f"生成 {stamp}（1時間ごとに更新）。掲載基準は CVSS 7.0 以上、または悪用確認済み（CISA KEV）。",
            f"書式: CVE番号 | 深刻度 CVSS | 悪用確認（該当時のみ） | 開発元 製品 | 公式の説明（英語の原文、冒頭）",
-           f"各件の詳細は {base}/v/<CVE番号>.html 。全件は {base}/api/vulns.jsonl 。使い方は {base}/llms.txt 。",
+           f"各件の詳細は {base}/v/<CVE番号> 。全件は {base}/api/vulns.jsonl 。使い方は {base}/llms.txt 。",
            ""]
     if kev:
         out += ["## 悪用が確認されている件", ""] + [_line(it) for it in kev] + [""]
@@ -90,8 +90,8 @@ def llms_txt(cfg, n_all, n_feed, stamp):
 - [全件（JSON Lines）]({base}/api/vulns.jsonl): 最終更新が直近{DAYS}日の件と、悪用確認済みの全件。いま {n_feed}件。1行が1件のJSON。大きいので全体を読まず、名前で絞り込んで使う
 - [新しい件の一覧（Markdown）]({base}/api/recent.md): 悪用確認済みの件と、更新の新しい{RECENT}件。1件1行。コマンドを実行できないときはこちらを読む
 - [RSS]({base}/feed.xml): 新着と追記（新しい50件）
-- 各件のページ: `{base}/v/<CVE番号>.html`（例: `{base}/v/CVE-2026-0001.html` の形）
-- 製品別のページとRSS: [製品別の一覧]({base}/products.html) からたどれる
+- 各件のページ: `{base}/v/<CVE番号>`（例: `{base}/v/CVE-2026-0001` の形）。古い件はページを外すことがあり、その場合は404になる
+- 製品別のページとRSS: [製品別の一覧]({base}/products) からたどれる
 
 ### vulns.jsonl の項目
 
@@ -127,8 +127,8 @@ def llms_txt(cfg, n_all, n_feed, stamp):
 
 ## サイトについて
 
-- [編集方針と出典]({base}/about.html): 情報源、掲載基準、AI要約の扱い
-- [AIで使う（人向けの説明）]({base}/ai.html): 利用者がAIに渡す依頼文の例
+- [編集方針と出典]({base}/about): 情報源、掲載基準、AI要約の扱い
+- [AIで使う（人向けの説明）]({base}/ai): 利用者がAIに渡す依頼文の例
 '''
 
 

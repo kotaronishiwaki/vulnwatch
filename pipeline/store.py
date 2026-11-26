@@ -14,6 +14,17 @@ def sev_ja(sev):
     return SEV_JA.get((sev or "").upper(), "未評価")
 
 
+def public_url(cfg, path=""):
+    """公開先でのURL。Cloudflare Pages は .html つきのURLを拡張子なしへ転送するので、
+    外へ出すURL（canonical、サイトマップ、RSS、SNS、メール、AI向けデータ）は外した形で書く。
+    サイト内のリンクは、手元でファイルを直接開いても動くよう .html のままにしている。"""
+    if path.endswith(".html"):
+        path = path[:-5]
+    if path == "index":
+        path = ""
+    return cfg["site_url"].rstrip("/") + "/" + path
+
+
 def item_path(root, cve):
     return os.path.join(root, "items", f"{cve}.json")
 

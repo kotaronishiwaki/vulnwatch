@@ -14,7 +14,7 @@ import urllib.parse
 import urllib.request
 from email.mime.text import MIMEText
 
-from .store import sev_ja
+from .store import public_url, sev_ja
 
 
 # ---------- 投稿文 ----------
@@ -26,7 +26,7 @@ def post_text(cfg, it, ev):
     bits = [f"{head}{s['title']}", it["id"] + (f" / CVSS {c['score']}" if c else "")]
     if ev["kind"] == "update" and ev["changes"]:
         bits.append(ev["changes"][0])
-    url = f'{cfg["site_url"].rstrip("/")}/v/{it["id"]}.html'
+    url = public_url(cfg, f'v/{it["id"]}.html')
     tags = " ".join("#" + t for t in cfg.get("social", {}).get("hashtags", []))
     body = "\n".join(bits)
     room = 250 - len(tags)  # Xは日本語140字相当。URLは別に数えられるので本文を短めに保つ
@@ -141,12 +141,12 @@ def build_mail(cfg, sub, pairs, test=False):
         kev = " / 悪用確認" if it["facts"].get("kev") else ""
         lines.append(f'[{kind}] {it["summary"]["title"]}\n  {it["id"]}{sev}{kev}\n' +
                      "".join(f"  ・{c}\n" for c in ev["changes"]) +
-                     f'  {it["summary"]["summary"]}\n  {base}/v/{it["id"]}.html\n')
+                     f'  {it["summary"]["summary"]}\n  {base}/v/{it["id"]}\n')
     if not lines:
         return None
     head = "これは通知の試験メールです。実際の通知は次の形で届きます。\n\n" if test else ""
     text = (head + "登録した製品（" + "、".join(sub.get("watch", [])) + "）に関する脆弱性のお知らせです。\n\n" +
-            "\n".join(lines) + f"\n配信の停止・変更: {base}/alerts.html\n")
+            "\n".join(lines) + f"\n配信の停止・変更: {base}/alerts\n")
     msg = MIMEText(text, "plain", "utf-8")
     msg["Subject"] = ("【テスト】" if test else "") + f'[{cfg["site_name"]}] 登録製品の脆弱性 {len(lines)}件'
     msg["From"] = os.environ.get("SMTP_FROM") or os.environ.get("SMTP_USER") or "alerts@localhost"

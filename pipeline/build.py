@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
 from . import aifeed, insights, thumb
-from .store import sev_ja
+from .store import public_url, sev_ja
 
 JST = timezone(timedelta(hours=9))
 E = html.escape
@@ -183,7 +183,7 @@ def page(cfg, pre, title, body, desc="", canonical="", og="", jsonld="", extra_h
     # トップは検索結果で内容が伝わるよう、サイト名に見出しを添える
     full = f"{title} | {name}" if title != name else " | ".join(filter(None, [name, cfg.get("headline")]))
     og_type = "article" if canonical.startswith("v/") else "website"
-    url = cfg["site_url"].rstrip("/") + "/" + canonical
+    url = public_url(cfg, canonical)
     ads = cfg.get("ads", {}).get("adsense_client")
     adsense = f'<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={E(ads)}" crossorigin="anonymous"></script>' if ads else ""
     ogimg = f'<meta property="og:image" content="{cfg["site_url"].rstrip("/")}/{og}"><meta name="twitter:card" content="summary_large_image">' if og else '<meta name="twitter:card" content="summary">'
@@ -252,7 +252,7 @@ def item_page(cfg, it):
     pre = "../"
     f, s = it["facts"], it["summary"]
     c, kev, e, jv = f.get("cvss"), f.get("kev"), f.get("epss"), f.get("jvn")
-    url = f'{cfg["site_url"].rstrip("/")}/v/{it["id"]}.html'
+    url = public_url(cfg, f'v/{it["id"]}.html')
     rows = []
     if c:
         rows.append(("深刻度（CVSS v" + c["version"] + "）", f'{sev_ja(c["severity"])} {c["score"]}<br><code>{E(c["vector"])}</code>'))
@@ -274,7 +274,11 @@ def item_page(cfg, it):
         f'<li class="{t["kind"]}"><time datetime="{t["at"]}">{jst(t["at"])}</time><div>{"".join("<p>" + E(x) + "</p>" for x in t["changes"])}</div></li>'
         for t in reversed(it["timeline"]))
 
-    prods = "".join(f'<a class="tag" href="{pre}p/{slug(p)}.html">{E(p["product"])}</a>' for p in f.get("products") or [])
+    has_page = cfg.get("_prod")  # 製品ページを作る製品。数を絞ったときは、無い製品をリンクにしない
+    prods = "".join(
+        f'<a class="tag" href="{pre}p/{slug(p)}.html">{E(p["product"])}</a>'
+        if has_page is None or slug(p) in has_page else f'<span class="tag">{E(p["product"])}</span>'
+        for p in f.get("products") or [])
     srcs = [f'<li><a href="https://nvd.nist.gov/vuln/detail/{it["id"]}" rel="noopener">NVD: {it["id"]}</a></li>']
     if jv:
         srcs.append(f'<li><a href="{E(jv["url"])}" rel="noopener">JVN iPedia: {E(jv["id"])}</a></li>')
@@ -336,7 +340,7 @@ def rss(cfg, items, title, self_path):
         pref = "【追記】" if last["kind"] == "update" else ""
         desc = it["summary"]["summary"] + (" 追記: " + " ".join(last["changes"]) if pref else "")
         pub = dt(it["updated"]).strftime("%a, %d %b %Y %H:%M:%S +0000")
-        ents.append(f'<item><title>{E(pref + it["summary"]["title"])}（{it["id"]}）</title><link>{base}/v/{it["id"]}.html</link><guid isPermaLink="false">{it["id"]}-{len(it["timeline"])}</guid><pubDate>{pub}</pubDate><description>{E(desc)}</description></item>')
+        ents.append(f'<item><title>{E(pref + it["summary"]["title"])}（{it["id"]}）</title><link>{base}/v/{it["id"]}</link><guid isPermaLink="false">{it["id"]}-{len(it["timeline"])}</guid><pubDate>{pub}</pubDate><description>{E(desc)}</description></item>')
     return f'<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>{E(title)}</title><link>{base}/</link><description>{E(cfg.get("tagline", ""))}</description><language>ja</language><atom:link href="{base}/{self_path}" rel="self" type="application/rss+xml"/>{"".join(ents)}</channel></rss>'
 
 
@@ -459,6 +463,29 @@ def ai_page(base):
 </ul>'''
 
 
+def keep_pages(ordered, cfg):
+    """ページを作る件を選ぶ。返り値: (作る件, 外した件数)
+
+    Cloudflare Pages は1回の公開が2万ファイルまで。記事は1件1ページなので、
+    悪用確認済みの件を優先し、残りを更新の新しい順に max_pages 件まで載せる。
+    外れた件も data/ には残り、追記が入って更新されればまた載る。"""
+    n = cfg.get("filters", {}).get("max_pages", 12000)
+    if len(ordered) <= n:
+        return ordered, 0
+    first = sorted(ordered, key=lambda i: 0 if i["facts"].get("kev") else 1)[:n]  # 並びは保たれる
+    keep = {i["id"] for i in first}
+    return [i for i in ordered if i["id"] in keep], len(ordered) - len(keep)
+
+
+def keep_products(prod, cfg):
+    """製品ページを作る製品を選ぶ（1製品につきページとRSSの2ファイル）。件数の多い順、同数なら更新の新しい順。"""
+    n = cfg.get("filters", {}).get("max_product_pages", 3000)
+    if len(prod) <= n:
+        return prod
+    top = sorted(prod.items(), key=lambda kv: (len(kv[1]["items"]), kv[1]["items"][0]["updated"]), reverse=True)
+    return dict(top[:n])
+
+
 def build(root, out, cfg, items, now):
     here = os.path.dirname(os.path.abspath(__file__))
     if os.path.exists(out):
@@ -473,7 +500,17 @@ def build(root, out, cfg, items, now):
             f.write(text)
 
     ordered = sorted(items.values(), key=lambda i: i["updated"], reverse=True)
+    ordered, dropped = keep_pages(ordered, cfg)
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # 製品ごとの件。記事ページが製品ページへリンクするので、先に決めておく
+    prod = {}
+    for it in ordered:
+        for p in it["facts"].get("products") or []:
+            prod.setdefault(slug(p), {"p": p, "items": []})["items"].append(it)
+    n_prod_all = len(prod)
+    prod = keep_products(prod, cfg)
+    cfg["_prod"] = set(prod)
 
     # 共有用の画像（新しい300件）。作れた記事のページにだけ、画像の指定を入れる。
     cfg["_og"] = {it["id"] for it in ordered[:300] if og_image(cfg, out, it)}
@@ -516,10 +553,6 @@ def build(root, out, cfg, items, now):
                               f"{m} に掲載した脆弱性の一覧。", f"m/{m}.html"))
 
     # 製品別（検索からの入口になるページ。製品ごとのRSSも出す）
-    prod = {}
-    for it in ordered:
-        for p in it["facts"].get("products") or []:
-            prod.setdefault(slug(p), {"p": p, "items": []})["items"].append(it)
     for sl, v in prod.items():
         name = v["p"]["product"]
         body = f'''<p class="crumbs"><a href="../products.html">製品別</a> / {E(name)}</p>
@@ -581,12 +614,24 @@ def build(root, out, cfg, items, now):
                       "このサイトをAIに読ませて、自分のプロジェクトに関係する脆弱性を調べる方法。Claude Code や Cursor に渡す依頼文つき。", "ai.html"))
 
     # サイトマップ。更新日時を付けて、検索エンジンが変わったページから見に来られるようにする
-    urls = [(f"{base}/", stamp), (f"{base}/products.html", stamp), (f"{base}/insights.html", stamp),
-            (f"{base}/ai.html", ""), (f"{base}/about.html", "")]
-    urls += [(f'{base}/v/{i["id"]}.html', i["updated"]) for i in ordered]
-    urls += [(f"{base}/p/{sl}.html", max(i["updated"] for i in v["items"])) for sl, v in prod.items()]
-    urls += [(f"{base}/m/{m}.html", "") for m in months]
+    urls = [(f"{base}/", stamp), (f"{base}/products", stamp), (f"{base}/insights", stamp),
+            (f"{base}/ai", ""), (f"{base}/about", "")]
+    urls += [(f'{base}/v/{i["id"]}', i["updated"]) for i in ordered]
+    urls += [(f"{base}/p/{sl}", max(i["updated"] for i in v["items"])) for sl, v in prod.items()]
+    urls += [(f"{base}/m/{m}", "") for m in months]
     w("sitemap.xml", '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
       "".join(f"<url><loc>{E(u)}</loc>" + (f"<lastmod>{m}</lastmod>" if m else "") + "</url>" for u, m in urls) + "</urlset>")
     w("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {base}/sitemap.xml\n")
+
+    # 無いページを開いたときの案内。どの階層のURLでも出るので、リンクは / から書く
+    w("404.html", page(cfg, "/", "ページが見つかりません", '''<h1>ページが見つかりません</h1>
+<p id="gone" hidden></p>
+<p>掲載から時間がたった記事は、ページを外しています。新しい件は<a href="/">新着の一覧</a>から、製品ごとの件は<a href="/products">製品別の一覧</a>から探せます。</p>''',
+                           "ページが見つかりません。", "404.html", extra_head='<meta name="robots" content="noindex">'))
+
+    # 公開できるファイル数（2万）に近づいたら、実行ログで知らせる
+    n_files = sum(len(fs) for _, _, fs in os.walk(out))
+    if dropped or n_prod_all > len(prod):
+        print(f"[info] ページ数の上限のため、古い記事 {dropped}件と製品ページ {n_prod_all - len(prod)}件を外しました")
+    print(f"[{'warn' if n_files > 18000 else 'info'}] 公開するファイル {n_files}個（Cloudflare Pages の上限は20000個）")
     return len(ordered), len(prod)

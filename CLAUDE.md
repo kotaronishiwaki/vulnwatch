@@ -10,6 +10,8 @@
 - APIキーやトークン、購読者のメールアドレスはリポジトリに入れない（GitHubのSecretsに置く）。
 - 記事の材料は一次情報（NVD / CISA KEV / JVN iPedia / EPSS）だけ。他サイトの記事は使わない。
 - 追記の文面は `pipeline/store.py` の差分から機械的に作る。AIに書かせない。
+- 外へ出すURLは `store.public_url()` で作る（`.html` を付けない）。サイト内のリンクは `.html` のまま。
+- 公開は2万ファイルまで。ページを増やす変更をするときは `build.keep_pages()` の上限と実行ログの `公開するファイル ○個` を確認する。
 - AI要約は `pipeline/summarize.py` の `verify()` で数値照合を通ったものだけ載せる。この照合を弱めない。
 
 ## 手元での確認（ネットワーク不要）

@@ -101,5 +101,7 @@ GitHub上から送る: Actions → update → Run workflow で、送り先と製
 - 購読者の登録は手作業です（Stripeの決済通知から `SUBSCRIBERS_JSON` へ自動反映する処理は未実装）。
 - 製品名はCPEという識別子から作るため、`Vpn` のように大文字小文字が不自然になることがあります。
 - CVSSがまだ付いていない新しいCVEは、スコアが7.0以上になるかKEVに載るまで掲載されません（JVNにだけ載った件は `data/` に保存され、基準を満たした時点で掲載されます）。
+- Cloudflare Pages は1回の公開が2万ファイルまでです。記事ページは、悪用確認済みの件と更新の新しい12,000件まで、製品ページは3,000製品までに絞ります（`config.json` の `filters.max_pages` / `filters.max_product_pages` で変更可）。外れた記事も `data/` には残り、開くと404の案内ページが出ます。実行ログの `公開するファイル ○個` で現在の数が分かります。
+- 外へ出すURL（canonical、サイトマップ、RSS、SNS、メール）は `.html` を付けない形です。Cloudflare Pages が `.html` つきのURLを拡張子なしへ転送するためです。
 - GitHub Actionsの定時実行は混雑時に数分〜数十分遅れることがあります。
 - 各取得元の利用条件（特にJVN iPediaの商用利用と、Xの投稿APIの料金・回数）は公開前に確認してください。

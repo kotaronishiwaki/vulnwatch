@@ -62,6 +62,17 @@
     try { navigator.clipboard.writeText(copy.dataset.url).then(function () { done('コピーしました'); }, function () { done('コピーできませんでした'); }); }
     catch (e) { done('コピーできませんでした'); }
   });
+  // 404ページ: 記事のURLだったときは、そのCVEの一次情報（NVD）へ案内する
+  var gone = document.getElementById('gone'), m = location.pathname.match(/\/v\/(CVE-\d{4}-\d+)/i);
+  if (gone && m) {
+    var id = m[1].toUpperCase(), a = document.createElement('a');
+    a.href = 'https://nvd.nist.gov/vuln/detail/' + id;
+    a.rel = 'noopener';
+    a.textContent = 'NVDで ' + id + ' を見る';
+    gone.textContent = id + ' の記事は、いまこのサイトにありません。';
+    gone.appendChild(a);
+    gone.hidden = false;
+  }
   // 「AIで使う」ページの依頼文をコピーするボタン（data-copy に、写す要素の id）
   document.querySelectorAll('button[data-copy]').forEach(function (b) {
     var label = b.textContent;
