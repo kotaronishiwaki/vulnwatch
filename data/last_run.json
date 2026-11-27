@@ -1,4 +1,35 @@
 {
- "at": "2026-11-27T07:16:16Z",
- "events": []
+ "at": "2026-11-27T08:18:56Z",
+ "events": [
+  {
+   "cve": "CVE-2025-70034",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-105831",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-130398",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-130399",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-130400",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  }
+ ]
 }
