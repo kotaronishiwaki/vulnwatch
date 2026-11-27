@@ -1,14 +1,44 @@
 {
- "at": "2026-11-27T19:11:40Z",
+ "at": "2026-11-27T20:14:07Z",
  "events": [
   {
-   "cve": "CVE-2025-30012",
+   "cve": "CVE-2026-134129",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-136112",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-136113",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2025-30018",
+   "cve": "CVE-2026-136114",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-136115",
+   "kind": "new",
+   "changes": [],
+   "major": true
+  },
+  {
+   "cve": "CVE-2026-136116",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-136117",
    "kind": "new",
    "changes": [],
    "major": false
