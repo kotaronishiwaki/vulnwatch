@@ -1,29 +1,4 @@
 {
- "at": "2026-11-27T03:17:44Z",
- "events": [
-  {
-   "cve": "CVE-2026-137041",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-137704",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-137705",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-137706",
-   "kind": "new",
-   "changes": [],
-   "major": true
-  }
- ]
+ "at": "2026-11-27T04:16:36Z",
+ "events": []
 }
