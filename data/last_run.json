@@ -1,68 +1,52 @@
 {
- "at": "2026-11-26T23:13:31Z",
+ "at": "2026-11-27T00:34:48Z",
  "events": [
   {
-   "cve": "CVE-2025-62229",
+   "cve": "CVE-2026-114454",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2025-62230",
+   "cve": "CVE-2026-127162",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2025-62231",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-11770",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-11788",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-12542",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-19611",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-34000",
+   "cve": "CVE-2026-127163",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-34002",
+   "cve": "CVE-2026-133530",
+   "kind": "update",
+   "changes": [
+    "CVSSスコア 1.8（注意）が付与されました。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-135384",
    "kind": "new",
    "changes": [],
    "major": true
   },
   {
-   "cve": "CVE-2026-35091",
+   "cve": "CVE-2026-135385",
    "kind": "new",
    "changes": [],
    "major": false
   },
   {
-   "cve": "CVE-2026-35092",
+   "cve": "CVE-2026-136976",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-89058",
    "kind": "new",
    "changes": [],
    "major": false
