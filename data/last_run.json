@@ -1,4 +1,23 @@
 {
- "at": "2026-11-27T04:16:36Z",
- "events": []
+ "at": "2026-11-27T05:15:03Z",
+ "events": [
+  {
+   "cve": "CVE-2023-3640",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-135626",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-135627",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  }
+ ]
 }
