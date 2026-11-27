@@ -1,43 +1,11 @@
 {
- "at": "2026-11-27T22:13:44Z",
+ "at": "2026-11-27T23:12:57Z",
  "events": [
   {
-   "cve": "CVE-2025-26733",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2025-26898",
+   "cve": "CVE-2026-138003",
    "kind": "new",
    "changes": [],
    "major": true
-  },
-  {
-   "cve": "CVE-2025-59011",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-136716",
-   "kind": "update",
-   "changes": [
-    "参考情報が 1 件追加されました。"
-   ],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-137941",
-   "kind": "new",
-   "changes": [],
-   "major": false
-  },
-  {
-   "cve": "CVE-2026-137974",
-   "kind": "new",
-   "changes": [],
-   "major": false
   }
  ]
 }
