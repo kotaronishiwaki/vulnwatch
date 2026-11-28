@@ -1,4 +1,27 @@
 {
- "at": "2026-11-28T14:13:25Z",
- "events": []
+ "at": "2026-11-28T15:12:26Z",
+ "events": [
+  {
+   "cve": "CVE-2026-133968",
+   "kind": "update",
+   "changes": [
+    "悪用される確率の推定（EPSS）が 27% から 63% に上がりました。"
+   ],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-138256",
+   "kind": "new",
+   "changes": [],
+   "major": false
+  },
+  {
+   "cve": "CVE-2026-90817",
+   "kind": "update",
+   "changes": [
+    "悪用される確率の推定（EPSS）が 19% から 38% に上がりました。"
+   ],
+   "major": false
+  }
+ ]
 }
